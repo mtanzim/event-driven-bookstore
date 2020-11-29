@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Book, BookComponent } from "./Book";
 import { CartItem, Cart } from "./CartItem";
+import { Checkout } from "./Checkout";
 import * as faker from "faker";
 
 // placeholder fake data
-const fakeBooks = [...Array(10).keys()].map((_) => ({
+const fakeBooks = [...Array(3).keys()].map((_) => ({
   _id: faker.random.uuid(),
-  title: faker.random.words(4),
+  title: faker.random.words(3),
   author: `${faker.name.firstName()} ${faker.name.lastName()}`,
   ISBN: faker.phone.phoneNumber(),
   price: faker.commerce.price(10, 300, 2),
@@ -75,10 +76,15 @@ export function Store() {
     setCart(new Map());
   }
 
+  function onSubmit(data: any) {
+    console.log(data);
+    console.log([...cart.values()]);
+  }
+
   return (
     <div>
       <h1>Welcome to the Bookstore</h1>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "800px 800px" }}>
         <div>
           <h2>Books</h2>
           <ul style={{ listStyle: "none" }}>
@@ -96,9 +102,12 @@ export function Store() {
           </ul>
           <button onClick={clearCart}>Clear Cart</button>
         </div>
-        <div>
+      </div>
+      <div>
+        <div style={{ maxWidth: 600, margin: "auto" }}>
           <h2>Checkout</h2>
           <p>Total Cost: ${cartTotal.toFixed(2)}</p>
+          <Checkout onSubmit={onSubmit} />
         </div>
       </div>
     </div>
