@@ -1,18 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { Book, BookComponent } from "./Book";
+import { CartItem, Cart } from "./CartItem";
 import * as faker from "faker";
-
-interface Book {
-  _id: string;
-  title: string;
-  author: string;
-  ISBN: string;
-  price: string;
-}
-
-interface CartItem {
-  book: Book;
-  qty: number;
-}
 
 // placeholder fake data
 const fakeBooks = [...Array(10).keys()].map((_) => ({
@@ -22,45 +11,6 @@ const fakeBooks = [...Array(10).keys()].map((_) => ({
   ISBN: faker.phone.phoneNumber(),
   price: faker.commerce.price(10, 300, 2),
 }));
-
-interface BookProps {
-  book: Book;
-  onAction: (id: string) => void;
-}
-
-function BookComponent({ book, onAction }: BookProps) {
-  return (
-    <div style={{ display: "flex" }}>
-      <li>{[book.title, book.author, `$${book.price}`].join(", ")}</li>
-      <button onClick={() => onAction(book._id)} style={{ marginLeft: 8 }}>
-        Add to Cart
-      </button>
-    </div>
-  );
-}
-
-interface CartProps {
-  item: CartItem;
-  onAction: (id: string) => void;
-}
-
-function Cart({ item, onAction }: CartProps) {
-  return (
-    <div style={{ display: "flex" }}>
-      <li>
-        {[
-          item.book.title,
-          item.book.author,
-          `$${item.book.price}`,
-          item.qty,
-        ].join(", ")}
-      </li>
-      <button onClick={() => onAction(item.book._id)} style={{ marginLeft: 8 }}>
-        Remove
-      </button>
-    </div>
-  );
-}
 
 export function Store() {
   const [books, setBooks] = useState(new Map<string, Book>());
@@ -128,21 +78,29 @@ export function Store() {
   return (
     <div>
       <h1>Welcome to the Bookstore</h1>
-      <h2>Books</h2>
-      <ul style={{ listStyle: "none" }}>
-        {[...books.values()].map((item) => (
-          <BookComponent book={item} onAction={addToCart} />
-        ))}
-      </ul>
-      <h2>Cart</h2>
-      <ul style={{ listStyle: "none" }}>
-        {[...cart.values()].map((item) => (
-          <Cart item={item} onAction={removeOneFromCart} />
-        ))}
-      </ul>
-      <button onClick={clearCart}>Clear Cart</button>
-      <h2>Checkout</h2>
-      <p>Total Cost: ${cartTotal.toFixed(2)}</p>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr" }}>
+        <div>
+          <h2>Books</h2>
+          <ul style={{ listStyle: "none" }}>
+            {[...books.values()].map((item) => (
+              <BookComponent book={item} onAction={addToCart} />
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h2>Cart</h2>
+          <ul style={{ listStyle: "none" }}>
+            {[...cart.values()].map((item) => (
+              <Cart item={item} onAction={removeOneFromCart} />
+            ))}
+          </ul>
+          <button onClick={clearCart}>Clear Cart</button>
+        </div>
+        <div>
+          <h2>Checkout</h2>
+          <p>Total Cost: ${cartTotal.toFixed(2)}</p>
+        </div>
+      </div>
     </div>
   );
 }
