@@ -5,16 +5,20 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "compile": "tsc",
+    "compile": "tsc --build tsconfig.json",
     "start": "node dist/"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "faker": "^5.1.0"
+    "dotenv": "^8.2.0",
+    "faker": "^5.1.0",
+    "mongodb": "^3.6.3"
   },
   "devDependencies": {
+    "@types/faker": "^5.1.4",
+    "@types/mongodb": "^3.5.34",
     "typescript": "^4.1.2"
   }
 }
