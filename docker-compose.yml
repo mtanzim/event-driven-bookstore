@@ -15,4 +15,15 @@ services:
     environment:
       - MONGO_URI=${MONGO_URI}
       - MONGO_DB=${MONGO_DB}
+      - MONGO_COLL=${MONGO_COLL}  
+  bookstore-server:
+    build: ./bookstore-server
+    depends_on:
+      - mongo
+    ports:
+      - "${REST_PORT}:${REST_PORT}"
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - MONGO_DB=${MONGO_DB}
       - MONGO_COLL=${MONGO_COLL}
+      - REST_PORT=${REST_PORT}

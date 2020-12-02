@@ -22,7 +22,7 @@ func main() {
 	defer disconnectDb()
 	bookHandler := handler.NewBookHandler(db)
 	r := mux.NewRouter()
-	port := os.Getenv("PORT")
+	port := os.Getenv("REST_PORT")
 	r.HandleFunc("/api/books", bookHandler.GetBooks).Methods(http.MethodGet)
 	r.Use(loggingMiddleware)
 	log.Fatal(http.ListenAndServe(":"+port, r))
