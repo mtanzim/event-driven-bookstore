@@ -20,7 +20,11 @@ async function seed() {
     await client.connect();
     const db = client.db(dbName);
     const coll = db.collection(collName);
-    await coll.drop()
+    try {
+      await coll.drop()
+    } catch(err) {
+      console.warn(err)
+    }
     // placeholder fake data
     const fakeBooks: Book[] = [...Array(SIZE).keys()].map((_) => ({
       title: faker.random.words(3),
