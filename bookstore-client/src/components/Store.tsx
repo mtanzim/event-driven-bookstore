@@ -6,20 +6,33 @@ import * as faker from "faker";
 
 // placeholder fake data
 const fakeBooks = [...Array(3).keys()].map((_) => ({
-  _id: faker.random.uuid(),
+  id: faker.random.uuid(),
   title: faker.random.words(3),
   author: `${faker.name.firstName()} ${faker.name.lastName()}`,
-  ISBN: faker.phone.phoneNumber(),
   price: faker.commerce.price(10, 300, 2),
+  stock: faker.random.number({ min: 2, max: 45 }),
 }));
+
+async function fetchBooks() {
+  const res = await fetch("http://localhost:8080/api/books");
+  const books = await res.json();
+  console.log(JSON.stringify(books));
+  return books;
+}
 
 export function Store() {
   const [books, setBooks] = useState(new Map<string, Book>());
   const [cart, setCart] = useState(new Map<string, CartItem>());
   const [cartTotal, setCartTotal] = useState(0.0);
+
+  const getBooks = async () => {
+    await fetchBooks();
+  };
+
   useEffect(() => {
+    getBooks();
     const bookMap = new Map<string, Book>();
-    fakeBooks.forEach((book) => bookMap.set(book._id, book));
+    fakeBooks.forEach((book) => bookMap.set(book.id, book));
     setBooks(bookMap);
   }, []);
   useEffect(calculateTotal, [cart]);

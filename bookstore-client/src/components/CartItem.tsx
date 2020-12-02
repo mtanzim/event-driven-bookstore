@@ -23,7 +23,7 @@ export function Cart({ item, onAction }: Props) {
       <p>{[item.book.title, item.book.author].join(", ")}</p>
       <p>${item.book.price}</p>
       <p>{item.qty}</p>
-      <button onClick={() => onAction(item.book._id)}>Delete</button>
+      <button onClick={() => onAction(item.book.id)}>Delete</button>
     </div>
   );
 }

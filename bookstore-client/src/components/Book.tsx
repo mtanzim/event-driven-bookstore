@@ -1,11 +1,11 @@
 import React from "react";
 
 export interface Book {
-  _id: string;
+  id: string;
   title: string;
   author: string;
-  ISBN: string;
   price: string;
+  stock: number;
 }
 
 interface Props {
@@ -24,7 +24,7 @@ export function BookComponent({ book, onAction }: Props) {
     >
       <p>{[book.title, book.author].join(", ")}</p>
       <p>${book.price}</p>
-      <button onClick={() => onAction(book._id)}>Add</button>
+      <button onClick={() => onAction(book.id)}>Add</button>
     </div>
   );
 }
