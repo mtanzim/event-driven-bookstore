@@ -10,7 +10,7 @@ import (
 )
 
 func NewBookHandler(db *mongo.Database) *Handler {
-	s := service.NewBookService(db)
+	s := service.NewService(db, "books")
 	return NewHandler(s)
 }
 

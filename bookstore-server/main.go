@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	handler "github.com/mtanzim/event-driven-bookstore/bookstore-server/handler"
 	persister "github.com/mtanzim/event-driven-bookstore/bookstore-server/persister"
+	"github.com/rs/cors"
 )
 
 func loggingMiddleware(next http.Handler) http.Handler {
@@ -23,7 +24,9 @@ func main() {
 	bookHandler := handler.NewBookHandler(db)
 	r := mux.NewRouter()
 	port := os.Getenv("REST_PORT")
-	r.HandleFunc("/api/books", bookHandler.GetBooks).Methods(http.MethodGet)
+	r.HandleFunc("/api/books", bookHandler.GetBooks).Methods(http.MethodGet, http.MethodOptions)
 	r.Use(loggingMiddleware)
-	log.Fatal(http.ListenAndServe(":"+port, r))
+	// TODO: fix this
+	rWithCORS := cors.Default().Handler(r)
+	log.Fatal(http.ListenAndServe(":"+port, rWithCORS))
 }

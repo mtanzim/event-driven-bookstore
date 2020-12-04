@@ -10,6 +10,7 @@ require (
 	github.com/joho/godotenv v1.3.0
 	github.com/klauspost/compress v1.11.3 // indirect
 	github.com/kr/text v0.2.0 // indirect
+	github.com/rs/cors v1.7.0 // indirect
 	github.com/tidwall/pretty v1.0.2 // indirect
 	go.mongodb.org/mongo-driver v1.4.4
 	golang.org/x/crypto v0.0.0-20201124201722-c8d3bf9c5392 // indirect

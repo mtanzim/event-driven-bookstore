@@ -7,16 +7,10 @@ import (
 
 	dto "github.com/mtanzim/event-driven-bookstore/bookstore-server/dto"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const CTXTimeout = 5
-const CollectionName = "books"
-
-func NewBookService(db *mongo.Database) *Service {
-	return NewService(db, CollectionName)
-}
 
 func (s Service) GetBooks() ([]dto.Book, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), CTXTimeout*time.Second)
