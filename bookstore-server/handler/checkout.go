@@ -20,11 +20,12 @@ func NewCheckoutHandler() *CheckoutHandler {
 
 func (h CheckoutHandler) Checkout(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/text")
-	var cart []dto.CartItem
+	var cart dto.Cart
 	err := json.NewDecoder(r.Body).Decode(&cart)
 	if err != nil {
-		http.Error(w, "Cannot post cart", http.StatusInternalServerError)
-
+		log.Println(err)
+		http.Error(w, "Cannot post cart", http.StatusBadRequest)
+		return
 	}
 	log.Println(cart)
 	w.Write([]byte("OK"))

@@ -1,13 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { Book, BookComponent } from "./Book";
-import { CartItem, Cart } from "./CartItem";
+import { BookComponent } from "./Book";
+import { Cart } from "./CartItem";
 import { Checkout } from "./Checkout";
-import * as faker from "faker";
+import { CheckoutFormValues, Book, CartItem, CheckoutDTO } from "./interfaces";
 
 async function fetchBooks() {
   const res = await fetch("http://localhost:8080/api/books");
   const books = await res.json();
   return books;
+}
+
+function checkoutCart(cart: CartItem[]) {
+  return async function (values: CheckoutFormValues) {
+    const body: CheckoutDTO = {
+      items: cart,
+      cartUserInformation: values,
+    };
+    console.log(body);
+    const res = await fetch("http://localhost:8080/api/checkout", {
+      method: "POST",
+      body: JSON.stringify(body),
+    });
+    return res.text();
+  };
 }
 
 export function Store() {
@@ -82,11 +97,6 @@ export function Store() {
     setCart(new Map());
   }
 
-  function onSubmit(data: any) {
-    console.log(data);
-    console.log(JSON.stringify([...cart.values()]));
-  }
-
   return (
     <div>
       <h1>Welcome to the Bookstore</h1>
@@ -117,7 +127,7 @@ export function Store() {
         <div style={{ maxWidth: 600, margin: "auto" }}>
           <h2>Checkout</h2>
           <p>Total Cost: ${cartTotal.toFixed(2)}</p>
-          <Checkout onSubmit={onSubmit} />
+          <Checkout onSubmit={checkoutCart([...cart.values()])} />
         </div>
       </div>
     </div>

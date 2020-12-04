@@ -1,12 +1,6 @@
 import React from "react";
+import {Book} from "./interfaces"
 
-export interface Book {
-  id: string;
-  title: string;
-  author: string;
-  price: string;
-  stock: number;
-}
 
 interface Props {
   book: Book;

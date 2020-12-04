@@ -1,10 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Book } from "./Book";
-
-export interface CartItem {
-  book: Book;
-  qty: number;
-}
+import React from "react";
+import { CartItem } from "./interfaces";
 
 interface Props {
   item: CartItem;

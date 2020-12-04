@@ -1,8 +1,9 @@
 import React from "react";
 import { useForm } from "react-hook-form";
+import { CheckoutFormValues } from "./interfaces";
 
 interface Props {
-  onSubmit: (data: any) => void;
+  onSubmit: (data: CheckoutFormValues) => Promise<string>;
 }
 export function Checkout({ onSubmit }: Props) {
   const { register, handleSubmit, errors } = useForm();
