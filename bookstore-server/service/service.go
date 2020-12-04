@@ -4,11 +4,17 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type Service struct {
+type MongoService struct {
 	collection *mongo.Collection
 }
 
-func NewService(db *mongo.Database, collName string) *Service {
+type SimpleService struct{}
+
+func NewMongoService(db *mongo.Database, collName string) *MongoService {
 	collection := db.Collection(collName)
-	return &Service{collection}
+	return &MongoService{collection}
+}
+
+func NewSimpleService() *SimpleService {
+	return &SimpleService{}
 }

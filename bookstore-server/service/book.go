@@ -12,7 +12,7 @@ import (
 
 const CTXTimeout = 5
 
-func (s Service) GetBooks() ([]dto.Book, error) {
+func (s MongoService) GetBooks() ([]dto.Book, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), CTXTimeout*time.Second)
 	defer cancel()
 
