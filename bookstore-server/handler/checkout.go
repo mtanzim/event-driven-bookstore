@@ -10,11 +10,11 @@ import (
 )
 
 type CheckoutHandler struct {
-	service *service.SimpleService
+	service *service.KafkaService
 }
 
 func NewCheckoutHandler() *CheckoutHandler {
-	s := service.NewSimpleService()
+	s := service.NewCheckoutService()
 	return &CheckoutHandler{s}
 }
 
@@ -27,6 +27,6 @@ func (h CheckoutHandler) Checkout(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Cannot post cart", http.StatusBadRequest)
 		return
 	}
-	log.Println(cart)
+	go h.service.CheckoutCart(&cart)
 	w.Write([]byte("OK"))
 }

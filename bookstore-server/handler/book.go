@@ -14,7 +14,7 @@ type BookHandler struct {
 }
 
 func NewBookHandler(db *mongo.Database) *BookHandler {
-	s := service.NewMongoService(db, "books")
+	s := service.NewBookService(db, "books")
 	return &BookHandler{s}
 }
 
