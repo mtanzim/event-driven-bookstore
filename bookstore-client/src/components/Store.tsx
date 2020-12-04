@@ -84,7 +84,7 @@ export function Store() {
 
   function onSubmit(data: any) {
     console.log(data);
-    console.log([...cart.values()]);
+    console.log(JSON.stringify([...cart.values()]));
   }
 
   return (
