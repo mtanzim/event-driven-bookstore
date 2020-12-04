@@ -4,19 +4,9 @@ import { CartItem, Cart } from "./CartItem";
 import { Checkout } from "./Checkout";
 import * as faker from "faker";
 
-// placeholder fake data
-const fakeBooks = [...Array(3).keys()].map((_) => ({
-  id: faker.random.uuid(),
-  title: faker.random.words(3),
-  author: `${faker.name.firstName()} ${faker.name.lastName()}`,
-  price: faker.commerce.price(10, 300, 2),
-  stock: faker.random.number({ min: 2, max: 45 }),
-}));
-
 async function fetchBooks() {
   const res = await fetch("http://localhost:8080/api/books");
   const books = await res.json();
-  console.log(JSON.stringify(books));
   return books;
 }
 
@@ -25,15 +15,15 @@ export function Store() {
   const [cart, setCart] = useState(new Map<string, CartItem>());
   const [cartTotal, setCartTotal] = useState(0.0);
 
-  const getBooks = async () => {
-    await fetchBooks();
-  };
-
   useEffect(() => {
-    getBooks();
-    const bookMap = new Map<string, Book>();
-    fakeBooks.forEach((book) => bookMap.set(book.id, book));
-    setBooks(bookMap);
+    (async () => {
+      const booksRaw: Book[] = await fetchBooks();
+      const bookMap = new Map<string, Book>();
+      booksRaw.forEach((book) => {
+        bookMap.set(book.id, book);
+      });
+      setBooks(bookMap);
+    })();
   }, []);
   useEffect(calculateTotal, [cart]);
 
@@ -52,6 +42,9 @@ export function Store() {
     const book = books.get(id)!;
     if (cart.has(id)) {
       const bookInCart = cart.get(id)!;
+      if (bookInCart.qty === book.stock) {
+        return;
+      }
       const updatedBookInCart: CartItem = {
         book: bookInCart.book,
         qty: bookInCart.qty + 1,
@@ -102,7 +95,7 @@ export function Store() {
           <h2>Books</h2>
           <ul style={{ listStyle: "none" }}>
             {[...books.values()].map((item) => (
-              <BookComponent book={item} onAction={addToCart} />
+              <BookComponent key={item.id} book={item} onAction={addToCart} />
             ))}
           </ul>
         </div>
@@ -110,7 +103,11 @@ export function Store() {
           <h2>Cart</h2>
           <ul style={{ listStyle: "none" }}>
             {[...cart.values()].map((item) => (
-              <Cart item={item} onAction={removeOneFromCart} />
+              <Cart
+                item={item}
+                key={item.book.id}
+                onAction={removeOneFromCart}
+              />
             ))}
           </ul>
           <button onClick={clearCart}>Clear Cart</button>
