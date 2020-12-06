@@ -3,18 +3,13 @@ package persister
 import (
 	"context"
 	"log"
-	"os"
 	"time"
 
-	_ "github.com/joho/godotenv/autoload"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func NewMongo() (*mongo.Database, func()) {
-
-	uri := os.Getenv("MONGO_URI")
-	dbName := os.Getenv("MONGO_DB")
+func NewMongo(uri string, dbName string) (*mongo.Database, func()) {
 
 	// connect to MongoDB
 	ctx, cancelCtx := context.WithTimeout(context.Background(), 10*time.Second)

@@ -1,26 +1,27 @@
 package service
 
 import (
+	"encoding/json"
 	"log"
 	"strconv"
 
 	dto "github.com/mtanzim/event-driven-bookstore/bookstore-server/dto"
 	primitive "go.mongodb.org/mongo-driver/bson/primitive"
+	"gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 )
 
-func NewCheckoutService() *KafkaService {
-	return &KafkaService{}
+func NewCheckoutService(p *kafka.Producer) *KafkaService {
+	return &KafkaService{p}
 }
 
-func (s KafkaService) CheckoutCart(cart *dto.Cart) error {
+func (s KafkaService) CheckoutCart(cart *dto.Cart) {
 	id := primitive.NewObjectID()
 	go s.requestCartShipment(cart, id)
 	go s.requestCartPayment(cart, id)
-	return nil
 }
 
 // TODO: fire off shipment message
-func (s KafkaService) requestCartShipment(cart *dto.Cart, id primitive.ObjectID) error {
+func (s KafkaService) requestCartShipment(cart *dto.Cart, id primitive.ObjectID) {
 
 	cartShipment := dto.CartShipment{
 		CartID:  id,
@@ -30,12 +31,10 @@ func (s KafkaService) requestCartShipment(cart *dto.Cart, id primitive.ObjectID)
 	}
 	log.Println(cartShipment)
 
-	return nil
-
 }
 
 // TODO: fire off a payment message
-func (s KafkaService) requestCartPayment(cart *dto.Cart, id primitive.ObjectID) error {
+func (s KafkaService) requestCartPayment(cart *dto.Cart, id primitive.ObjectID) {
 
 	var totalPrice float64
 
@@ -57,6 +56,16 @@ func (s KafkaService) requestCartPayment(cart *dto.Cart, id primitive.ObjectID) 
 	}
 	log.Println(cartPayment)
 
-	return nil
+	topic := "CartPayment"
+	msg, err := json.Marshal(cartPayment)
+	if err != nil {
+		log.Println(err)
+	} else {
+		err = s.producer.Produce(&kafka.Message{
+			TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
+			Value:          msg,
+		}, nil)
+		log.Println(err)
 
+	}
 }

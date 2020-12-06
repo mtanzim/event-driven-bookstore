@@ -6,6 +6,8 @@ import (
 	"os"
 
 	"github.com/gorilla/mux"
+	_ "github.com/joho/godotenv/autoload"
+	broker "github.com/mtanzim/event-driven-bookstore/bookstore-server/broker"
 	handler "github.com/mtanzim/event-driven-bookstore/bookstore-server/handler"
 	persister "github.com/mtanzim/event-driven-bookstore/bookstore-server/persister"
 	"github.com/rs/cors"
@@ -19,10 +21,18 @@ func loggingMiddleware(next http.Handler) http.Handler {
 }
 
 func main() {
-	db, disconnectDb := persister.NewMongo()
+
+	uri := os.Getenv("MONGO_URI")
+	dbName := os.Getenv("MONGO_DB")
+	db, disconnectDb := persister.NewMongo(uri, dbName)
 	defer disconnectDb()
+
+	kafkaServerAddr := os.Getenv("KAFKA_SERVER_ADDR")
+	producer := broker.NewKafkaProducer(kafkaServerAddr)
+	defer producer.Close()
+
 	bookHandler := handler.NewBookHandler(db)
-	checkoutHandler := handler.NewCheckoutHandler()
+	checkoutHandler := handler.NewCheckoutHandler(producer)
 	r := mux.NewRouter()
 	port := os.Getenv("REST_PORT")
 	r.HandleFunc("/api/books", bookHandler.GetBooks).Methods(http.MethodGet, http.MethodOptions)
