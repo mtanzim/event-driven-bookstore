@@ -7,9 +7,9 @@ import (
 
 	"github.com/gorilla/mux"
 	_ "github.com/joho/godotenv/autoload"
-	broker "github.com/mtanzim/event-driven-bookstore/bookstore-server/broker"
 	handler "github.com/mtanzim/event-driven-bookstore/bookstore-server/handler"
 	persister "github.com/mtanzim/event-driven-bookstore/bookstore-server/persister"
+	kafkaProducer "github.com/mtanzim/event-driven-bookstore/bookstore-server/producer"
 	"github.com/rs/cors"
 )
 
@@ -24,15 +24,20 @@ func main() {
 
 	uri := os.Getenv("MONGO_URI")
 	dbName := os.Getenv("MONGO_DB")
+
+	topics := make(map[string]string)
+	topics["CART_TOPIC"] = os.Getenv("CART_TOPIC")
+	topics["SHIPMENT_TOPIC"] = os.Getenv("SHIPMENT_TOPIC")
+
 	db, disconnectDb := persister.NewMongo(uri, dbName)
 	defer disconnectDb()
 
 	kafkaServerAddr := os.Getenv("KAFKA_SERVER_ADDR")
-	producer := broker.NewKafkaProducer(kafkaServerAddr)
+	producer := kafkaProducer.NewKafkaProducer(kafkaServerAddr)
 	defer producer.Close()
 
 	bookHandler := handler.NewBookHandler(db)
-	checkoutHandler := handler.NewCheckoutHandler(producer)
+	checkoutHandler := handler.NewCheckoutHandler(producer, topics)
 	r := mux.NewRouter()
 	port := os.Getenv("REST_PORT")
 	r.HandleFunc("/api/books", bookHandler.GetBooks).Methods(http.MethodGet, http.MethodOptions)

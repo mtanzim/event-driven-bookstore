@@ -11,4 +11,5 @@ type MongoService struct {
 
 type KafkaService struct {
 	producer *kafka.Producer
+	topics   map[string]string
 }

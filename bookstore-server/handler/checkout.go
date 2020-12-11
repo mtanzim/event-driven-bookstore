@@ -14,8 +14,8 @@ type CheckoutHandler struct {
 	service *service.KafkaService
 }
 
-func NewCheckoutHandler(p *kafka.Producer) *CheckoutHandler {
-	s := service.NewCheckoutService(p)
+func NewCheckoutHandler(p *kafka.Producer, topics map[string]string) *CheckoutHandler {
+	s := service.NewCheckoutService(p, topics)
 	return &CheckoutHandler{s}
 }
 

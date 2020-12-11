@@ -10,8 +10,8 @@ import (
 	"gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 )
 
-func NewCheckoutService(p *kafka.Producer) *KafkaService {
-	return &KafkaService{p}
+func NewCheckoutService(p *kafka.Producer, topics map[string]string) *KafkaService {
+	return &KafkaService{p, topics}
 }
 
 func (s KafkaService) CheckoutCart(cart *dto.Cart) {
@@ -52,11 +52,12 @@ func (s KafkaService) requestCartPayment(cart *dto.Cart, id primitive.ObjectID) 
 		Phone:      cart.CartUserInformation.Phone,
 		Email:      cart.CartUserInformation.Email,
 		CardNum:    cart.CartUserInformation.CardNum,
+		CardCode:   cart.CartUserInformation.CardCode,
 		TotalPrice: totalPrice,
 	}
 	log.Println(cartPayment)
 
-	topic := "CartPayment"
+	topic := s.topics["CART_TOPIC"]
 	msg, err := json.Marshal(cartPayment)
 	if err != nil {
 		log.Println(err)
