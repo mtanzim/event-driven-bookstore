@@ -10,7 +10,7 @@ import (
 )
 
 type BookHandler struct {
-	service *service.MongoService
+	service *service.BookService
 }
 
 func NewBookHandler(db *mongo.Database) *BookHandler {

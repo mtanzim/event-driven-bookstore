@@ -13,12 +13,16 @@ import (
 
 const CTXTimeout = 5
 
-func NewBookService(db *mongo.Database, collName string) *MongoService {
-	collection := db.Collection(collName)
-	return &MongoService{collection}
+type BookService struct {
+	collection *mongo.Collection
 }
 
-func (s MongoService) GetBooks() ([]dto.Book, error) {
+func NewBookService(db *mongo.Database, collName string) *BookService {
+	collection := db.Collection(collName)
+	return &BookService{collection}
+}
+
+func (s BookService) GetBooks() ([]dto.Book, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), CTXTimeout*time.Second)
 	defer cancel()
 
