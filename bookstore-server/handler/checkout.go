@@ -11,10 +11,10 @@ import (
 )
 
 type CheckoutHandler struct {
-	service *service.KafkaService
+	service *service.CheckoutService
 }
 
-func NewCheckoutHandler(p *kafka.Producer, topics map[string]string) *CheckoutHandler {
+func NewCheckoutHandler(p *kafka.Producer, topics *service.CheckoutTopics) *CheckoutHandler {
 	s := service.NewCheckoutService(p, topics)
 	return &CheckoutHandler{s}
 }

@@ -10,6 +10,7 @@ import (
 	handler "github.com/mtanzim/event-driven-bookstore/bookstore-server/handler"
 	persister "github.com/mtanzim/event-driven-bookstore/bookstore-server/persister"
 	kafkaProducer "github.com/mtanzim/event-driven-bookstore/bookstore-server/producer"
+	"github.com/mtanzim/event-driven-bookstore/bookstore-server/service"
 	"github.com/rs/cors"
 )
 
@@ -25,9 +26,9 @@ func main() {
 	uri := os.Getenv("MONGO_URI")
 	dbName := os.Getenv("MONGO_DB")
 
-	topics := make(map[string]string)
-	topics["CART_TOPIC"] = os.Getenv("CART_TOPIC")
-	topics["SHIPMENT_TOPIC"] = os.Getenv("SHIPMENT_TOPIC")
+	var checkoutTopics service.CheckoutTopics
+	checkoutTopics.CartTopic = os.Getenv("CART_TOPIC")
+	checkoutTopics.ShipmentTopic = os.Getenv("SHIPMENT_TOPIC")
 
 	db, disconnectDb := persister.NewMongo(uri, dbName)
 	defer disconnectDb()
@@ -37,7 +38,7 @@ func main() {
 	defer producer.Close()
 
 	bookHandler := handler.NewBookHandler(db)
-	checkoutHandler := handler.NewCheckoutHandler(producer, topics)
+	checkoutHandler := handler.NewCheckoutHandler(producer, &checkoutTopics)
 	r := mux.NewRouter()
 	port := os.Getenv("REST_PORT")
 	r.HandleFunc("/api/books", bookHandler.GetBooks).Methods(http.MethodGet, http.MethodOptions)

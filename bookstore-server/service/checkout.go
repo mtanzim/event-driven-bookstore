@@ -10,18 +10,28 @@ import (
 	"gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 )
 
-func NewCheckoutService(p *kafka.Producer, topics map[string]string) *KafkaService {
-	return &KafkaService{p, topics}
+type CheckoutTopics struct {
+	CartTopic     string
+	ShipmentTopic string
 }
 
-func (s KafkaService) CheckoutCart(cart *dto.Cart) {
+type CheckoutService struct {
+	producer *kafka.Producer
+	topics   *CheckoutTopics
+}
+
+func NewCheckoutService(p *kafka.Producer, topics *CheckoutTopics) *CheckoutService {
+	return &CheckoutService{p, topics}
+}
+
+func (s CheckoutService) CheckoutCart(cart *dto.Cart) {
 	id := primitive.NewObjectID()
 	go s.requestCartShipment(cart, id)
 	go s.requestCartPayment(cart, id)
 }
 
 // TODO: fire off shipment message
-func (s KafkaService) requestCartShipment(cart *dto.Cart, id primitive.ObjectID) {
+func (s CheckoutService) requestCartShipment(cart *dto.Cart, id primitive.ObjectID) {
 
 	cartShipment := dto.CartShipment{
 		CartID:  id,
@@ -34,7 +44,9 @@ func (s KafkaService) requestCartShipment(cart *dto.Cart, id primitive.ObjectID)
 }
 
 // TODO: fire off a payment message
-func (s KafkaService) requestCartPayment(cart *dto.Cart, id primitive.ObjectID) {
+// TODO: add encryption to credit card data!
+// https://www.melvinvivas.com/how-to-encrypt-and-decrypt-data-using-aes/
+func (s CheckoutService) requestCartPayment(cart *dto.Cart, id primitive.ObjectID) {
 
 	var totalPrice float64
 
@@ -57,7 +69,7 @@ func (s KafkaService) requestCartPayment(cart *dto.Cart, id primitive.ObjectID) 
 	}
 	log.Println(cartPayment)
 
-	topic := s.topics["CART_TOPIC"]
+	topic := s.topics.CartTopic
 	msg, err := json.Marshal(cartPayment)
 	if err != nil {
 		log.Println(err)
