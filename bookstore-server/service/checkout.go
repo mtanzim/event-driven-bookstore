@@ -24,10 +24,13 @@ func NewCheckoutService(p *kafka.Producer, topics *CheckoutTopics) *CheckoutServ
 	return &CheckoutService{p, topics}
 }
 
-func (s CheckoutService) CheckoutCart(cart *dto.Cart) {
+func (s CheckoutService) CheckoutCart(cart *dto.Cart) *dto.CartResponse {
 	id := primitive.NewObjectID()
 	go s.requestCartShipment(cart, id)
 	go s.requestCartPayment(cart, id)
+	cartResponse := dto.CartResponse{CartID: id, Status: "requested"}
+	return &cartResponse
+
 }
 
 // TODO: fire off shipment message
@@ -37,6 +40,7 @@ func (s CheckoutService) requestCartShipment(cart *dto.Cart, id primitive.Object
 		CartID:  id,
 		Address: cart.CartUserInformation.Address,
 		Phone:   cart.CartUserInformation.Phone,
+		Email:   cart.CartUserInformation.Email,
 		Items:   cart.Items,
 	}
 	log.Println(cartShipment)

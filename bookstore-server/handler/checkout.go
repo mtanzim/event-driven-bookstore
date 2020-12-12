@@ -19,6 +19,7 @@ func NewCheckoutHandler(p *kafka.Producer, topics *service.CheckoutTopics) *Chec
 	return &CheckoutHandler{s}
 }
 
+// TODO: form validations
 func (h CheckoutHandler) Checkout(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/text")
 	var cart dto.Cart
@@ -28,6 +29,6 @@ func (h CheckoutHandler) Checkout(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Cannot post cart", http.StatusBadRequest)
 		return
 	}
-	go h.service.CheckoutCart(&cart)
-	w.Write([]byte("OK"))
+	cartRes := h.service.CheckoutCart(&cart)
+	json.NewEncoder(w).Encode(cartRes)
 }

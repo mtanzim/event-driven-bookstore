@@ -34,5 +34,11 @@ type CartShipment struct {
 	CartID  primitive.ObjectID `json:"cartId"`
 	Address string             `json:"address"`
 	Phone   string             `json:"phone"`
+	Email   string             `json:"email"`
 	Items   []CartItem         `json:"items"`
+}
+
+type CartResponse struct {
+	CartID primitive.ObjectID `json:"cartId"`
+	Status string             `json:"status"`
 }
