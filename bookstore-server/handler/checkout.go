@@ -5,8 +5,8 @@ import (
 	"log"
 	"net/http"
 
-	dto "github.com/mtanzim/event-driven-bookstore/bookstore-server/dto"
 	service "github.com/mtanzim/event-driven-bookstore/bookstore-server/service"
+	dto "github.com/mtanzim/event-driven-bookstore/common-server/dto"
 	"gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 )
 

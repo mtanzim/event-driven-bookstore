@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 
-	dto "github.com/mtanzim/event-driven-bookstore/bookstore-server/dto"
+	dto "github.com/mtanzim/event-driven-bookstore/common-server/dto"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

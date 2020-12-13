@@ -5,7 +5,7 @@ import (
 	"log"
 	"strconv"
 
-	dto "github.com/mtanzim/event-driven-bookstore/bookstore-server/dto"
+	dto "github.com/mtanzim/event-driven-bookstore/common-server/dto"
 	primitive "go.mongodb.org/mongo-driver/bson/primitive"
 	"gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 )

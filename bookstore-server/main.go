@@ -8,9 +8,9 @@ import (
 	"github.com/gorilla/mux"
 	_ "github.com/joho/godotenv/autoload"
 	handler "github.com/mtanzim/event-driven-bookstore/bookstore-server/handler"
-	persister "github.com/mtanzim/event-driven-bookstore/bookstore-server/persister"
-	kafkaProducer "github.com/mtanzim/event-driven-bookstore/bookstore-server/producer"
 	"github.com/mtanzim/event-driven-bookstore/bookstore-server/service"
+	persister "github.com/mtanzim/event-driven-bookstore/common-server/persister"
+	kafkaProducer "github.com/mtanzim/event-driven-bookstore/common-server/producer"
 	"github.com/rs/cors"
 )
 
