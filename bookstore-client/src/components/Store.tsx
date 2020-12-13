@@ -2,13 +2,8 @@ import React, { useEffect, useState } from "react";
 import { BookComponent } from "./Book";
 import { Cart } from "./CartItem";
 import { Checkout } from "./Checkout";
-import { CheckoutFormValues, Book, CartItem, CheckoutDTO } from "./interfaces";
-
-async function fetchBooks() {
-  const res = await fetch("http://localhost:8080/api/books");
-  const books = await res.json();
-  return books;
-}
+import { CheckoutFormValues, CheckoutDTO } from "./interfaces";
+import { fetchBooks, Book, CartItem } from "../api";
 
 function checkoutCart(cart: CartItem[]) {
   return async function (values: CheckoutFormValues) {
@@ -32,7 +27,7 @@ export function Store() {
 
   useEffect(() => {
     (async () => {
-      const booksRaw: Book[] = await fetchBooks();
+      const booksRaw = await fetchBooks();
       const bookMap = new Map<string, Book>();
       booksRaw.forEach((book) => {
         bookMap.set(book.id, book);

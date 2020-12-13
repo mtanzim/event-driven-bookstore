@@ -1,6 +1,5 @@
 import React from "react";
-import {Book} from "./interfaces"
-
+import { Book } from "../api";
 
 interface Props {
   book: Book;

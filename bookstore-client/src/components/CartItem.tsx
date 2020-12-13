@@ -1,5 +1,5 @@
 import React from "react";
-import { CartItem } from "./interfaces";
+import { CartItem } from "../api";
 
 interface Props {
   item: CartItem;

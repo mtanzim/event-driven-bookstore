@@ -1,14 +1,5 @@
-export interface Book {
-  id: string;
-  title: string;
-  author: string;
-  price: string;
-  stock: number;
-}
-export interface CartItem {
-  book: Book;
-  qty: number;
-}
+import { CartItem } from "../api";
+
 export interface CheckoutFormValues {
   address: string;
   cardNum: string;
