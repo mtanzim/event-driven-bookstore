@@ -2,16 +2,17 @@ package consumer
 
 import (
 	"log"
+	"sync"
 
 	_ "github.com/joho/godotenv/autoload"
 	"gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 )
 
 func NewKafkaConsumer(kafkaServerAddr string, groupId string) *kafka.Consumer {
-	// connect to Kafka
 	log.Println(kafkaServerAddr)
 	log.Println(groupId)
 
+	// connect to Kafka
 	c, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers": kafkaServerAddr,
 		"group.id":          groupId,
@@ -24,23 +25,9 @@ func NewKafkaConsumer(kafkaServerAddr string, groupId string) *kafka.Consumer {
 	return c
 }
 
-// func ConsumeShipmentMessages(c *kafka.Consumer, topic string) {
-// 	defer c.Close()
-// 	log.Println(topic)
-// 	c.Subscribe(topic, nil)
-// 	consumeMessages(c)
-// }
-
-// func ConsumePaymentMessages() {
-// 	defer c.Close()
-// 	log.Println(topic)
-// 	c.Subscribe(topic, nil)
-// 	consumeMessages(c)
-
-// }
-
-func ConsumeMessages(c *kafka.Consumer, topic string) {
+func ConsumeMessages(c *kafka.Consumer, topic string, wg *sync.WaitGroup) {
 	defer c.Close()
+	defer wg.Done()
 	log.Println(topic)
 	c.Subscribe(topic, nil)
 	for {
