@@ -11,7 +11,7 @@ import (
 )
 
 type CheckoutTopics struct {
-	CartTopic     string
+	PaymentTopic  string
 	ShipmentTopic string
 }
 
@@ -44,6 +44,13 @@ func (s CheckoutService) requestCartShipment(cart *dto.Cart, id primitive.Object
 		Items:   cart.Items,
 	}
 	log.Println(cartShipment)
+	topic := s.topics.ShipmentTopic
+	msg, err := json.Marshal(cartShipment)
+	if err != nil {
+		log.Println(err)
+	} else {
+		s.sendMessageToProducer(&topic, msg)
+	}
 
 }
 
@@ -73,16 +80,21 @@ func (s CheckoutService) requestCartPayment(cart *dto.Cart, id primitive.ObjectI
 	}
 	log.Println(cartPayment)
 
-	topic := s.topics.CartTopic
+	topic := s.topics.PaymentTopic
 	msg, err := json.Marshal(cartPayment)
 	if err != nil {
 		log.Println(err)
 	} else {
-		err = s.producer.Produce(&kafka.Message{
-			TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
-			Value:          msg,
-		}, nil)
-		log.Println(err)
-
+		s.sendMessageToProducer(&topic, msg)
 	}
+}
+
+func (s CheckoutService) sendMessageToProducer(topic *string, msg []byte) {
+
+	err := s.producer.Produce(&kafka.Message{
+		TopicPartition: kafka.TopicPartition{Topic: topic, Partition: kafka.PartitionAny},
+		Value:          msg,
+	}, nil)
+	log.Println(err)
+
 }

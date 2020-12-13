@@ -27,7 +27,7 @@ func main() {
 	dbName := os.Getenv("MONGO_DB")
 
 	var checkoutTopics service.CheckoutTopics
-	checkoutTopics.CartTopic = os.Getenv("CART_TOPIC")
+	checkoutTopics.PaymentTopic = os.Getenv("PAYMENT_TOPIC")
 	checkoutTopics.ShipmentTopic = os.Getenv("SHIPMENT_TOPIC")
 
 	db, disconnectDb := persister.NewMongo(uri, dbName)
