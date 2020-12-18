@@ -1,10 +1,13 @@
 package service
 
 import (
+	"context"
 	"encoding/json"
 	"log"
+	"time"
 
-	"github.com/mtanzim/event-driven-bookstore/common-server/dto"
+	dto "github.com/mtanzim/event-driven-bookstore/common-server/dto"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 )
@@ -30,9 +33,36 @@ func (s ShipmentService) ConsumeMessages() {
 			continue
 		}
 		log.Printf("Message on %s: %s\n", msg.TopicPartition, string(msg.Value))
-		var rawDat dto.CartShipment
-		dat := dto.CartWarehouse{}
-		shipment := json.Unmarshal()
-		s.collection.InsertOne()
+		var cart dto.CartShipment
+		if err := json.Unmarshal(msg.Value, &cart); err != nil {
+			log.Println(err)
+		}
+
+		shipmentRequest := dto.CartWarehouse{
+			ID:      cart.CartID,
+			Cart:    cart,
+			Shipped: false,
+			Paid:    false,
+		}
+		log.Println(shipmentRequest)
+		go s.persist(shipmentRequest)
 	}
+}
+
+func (s ShipmentService) persist(shipmentRequest dto.CartWarehouse) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var existing bson.M
+	if err := s.collection.FindOne(ctx, bson.M{"_id": shipmentRequest.ID}).Decode(&existing); err != nil {
+		if err == mongo.ErrNoDocuments {
+			insertRes, insertErr := s.collection.InsertOne(ctx, shipmentRequest)
+			if insertErr != nil {
+				// TODO: ignore failed insert on duplicate?
+				log.Println(err)
+			}
+			log.Println("Inserted shipment ", insertRes.InsertedID)
+		}
+	}
+
 }
