@@ -4,6 +4,7 @@ import (
 	"os"
 	"sync"
 
+	_ "github.com/joho/godotenv/autoload"
 	consumer "github.com/mtanzim/event-driven-bookstore/common-server/consumer"
 	persister "github.com/mtanzim/event-driven-bookstore/common-server/persister"
 	service "github.com/mtanzim/event-driven-bookstore/warehouse-server/service"

@@ -1,8 +1,10 @@
 package service
 
 import (
+	"encoding/json"
 	"log"
 
+	"github.com/mtanzim/event-driven-bookstore/common-server/dto"
 	"go.mongodb.org/mongo-driver/mongo"
 	"gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 )
@@ -28,5 +30,9 @@ func (s ShipmentService) ConsumeMessages() {
 			continue
 		}
 		log.Printf("Message on %s: %s\n", msg.TopicPartition, string(msg.Value))
+		var rawDat dto.CartShipment
+		dat := dto.CartWarehouse{}
+		shipment := json.Unmarshal()
+		s.collection.InsertOne()
 	}
 }
