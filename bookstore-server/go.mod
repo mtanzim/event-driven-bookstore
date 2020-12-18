@@ -6,7 +6,7 @@ require (
 	github.com/aws/aws-sdk-go v1.36.11 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/joho/godotenv v1.3.0
-	github.com/mtanzim/event-driven-bookstore/common-server v0.0.0-20201218123655-8698acd0eeba
+	github.com/mtanzim/event-driven-bookstore/common-server v0.0.0-20201218130814-89d0f3ce984a
 	github.com/rs/cors v1.7.0
 	go.mongodb.org/mongo-driver v1.4.4
 	golang.org/x/crypto v0.0.0-20201217014255-9d1352758620 // indirect
