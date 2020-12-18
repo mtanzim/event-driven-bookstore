@@ -2,7 +2,7 @@ package dto
 
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
-type ID primitive.ObjectID
+
 
 type CartItem struct {
 	Book Book  `json:"book"`
@@ -23,7 +23,7 @@ type Cart struct {
 }
 
 type CartPayment struct {
-	CartID     ID      `json:"cartId"`
+	CartID     ID      IDTag
 	Address    string  `json:"address"`
 	CardNum    string  `json:"cardNum"`
 	CardCode   string  `json:"code"`
@@ -33,7 +33,7 @@ type CartPayment struct {
 }
 
 type CartShipment struct {
-	CartID  ID         `json:"cartId"`
+	CartID  ID         IDTag
 	Address string     `json:"address"`
 	Phone   string     `json:"phone"`
 	Email   string     `json:"email"`
@@ -41,12 +41,12 @@ type CartShipment struct {
 }
 
 type CartResponse struct {
-	CartID ID     `json:"cartId"`
+	CartID ID     IDTag
 	Status string `json:"status"`
 }
 
 type CartWarehouse struct {
-	ID      ID           `bson:"_id,omitempty" json:"id"`
+	ID      ID           IDTag
 	Cart    CartShipment `json:"cart"`
 	Shipped bool         `json:"shipped" bson:"shipped"`
 	Paid    bool         `json:"paid" bson:"paid"`
