@@ -40,12 +40,6 @@ func (s PaymentService) ConsumeMessages() {
 	}
 }
 
-// type CartPaymentResponse struct {
-// 	CartID   primitive.ObjectID `bson:"_id,omitempty" json:"cartId"`
-// 	Approved bool               `json:"approved"`
-// 	Message  string             `json:"message,omitempty"`
-// }
-
 // TODO: 3rd party payment processing?
 func (s PaymentService) processPayment(paymentRequest *dto.CartPayment) {
 	log.Println("Processing payment")
