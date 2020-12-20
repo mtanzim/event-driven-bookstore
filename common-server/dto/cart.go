@@ -43,6 +43,12 @@ type CartResponse struct {
 	Status string             `json:"status"`
 }
 
+type CartPaymentResponse struct {
+	CartID   primitive.ObjectID `bson:"_id,omitempty" json:"cartId"`
+	Approved bool               `json:"approved"`
+	Message  string             `json:"message,omitempty"`
+}
+
 type CartWarehouse struct {
 	ID      primitive.ObjectID `bson:"_id,omitempty" json:"cartId"`
 	Cart    CartShipment       `json:"cart"`

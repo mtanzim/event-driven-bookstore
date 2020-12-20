@@ -9,18 +9,20 @@ import (
 )
 
 type PaymentService struct {
-	consumer *kafka.Consumer
-	topic    string
+	consumer              *kafka.Consumer
+	producer              *kafka.Producer
+	topicPaymentRequested string
+	topicPaymentProcessed string
 }
 
-func NewPaymentService(c *kafka.Consumer, topic string) *PaymentService {
-	return &PaymentService{c, topic}
+func NewPaymentService(consumer *kafka.Consumer, topicPaymentRequested string, producer *kafka.Producer, topicPaymentProcessed string) *PaymentService {
+	return &PaymentService{consumer, producer, topicPaymentRequested, topicPaymentProcessed}
 }
 
 func (s PaymentService) ConsumeMessages() {
 	defer s.consumer.Close()
-	log.Println(s.topic)
-	s.consumer.Subscribe(s.topic, nil)
+	log.Println(s.topicPaymentRequested)
+	s.consumer.Subscribe(s.topicPaymentRequested, nil)
 	for {
 		msg, err := s.consumer.ReadMessage(-1)
 		if err != nil {
@@ -38,7 +40,37 @@ func (s PaymentService) ConsumeMessages() {
 	}
 }
 
+// type CartPaymentResponse struct {
+// 	CartID   primitive.ObjectID `bson:"_id,omitempty" json:"cartId"`
+// 	Approved bool               `json:"approved"`
+// 	Message  string             `json:"message,omitempty"`
+// }
+
+// TODO: 3rd party payment processing?
 func (s PaymentService) processPayment(paymentRequest *dto.CartPayment) {
 	log.Println("Processing payment")
 	log.Println(paymentRequest)
+
+	paymentStatus := dto.CartPaymentResponse{CartID: paymentRequest.CartID,
+		Approved: true,
+	}
+
+	topic := s.topicPaymentProcessed
+	msg, err := json.Marshal(paymentStatus)
+	if err != nil {
+		log.Println(err)
+	} else {
+		s.sendMessageToProducer(&topic, msg)
+	}
+}
+
+// TODO: move this to common?
+func (s PaymentService) sendMessageToProducer(topic *string, msg []byte) {
+
+	err := s.producer.Produce(&kafka.Message{
+		TopicPartition: kafka.TopicPartition{Topic: topic, Partition: kafka.PartitionAny},
+		Value:          msg,
+	}, nil)
+	log.Println(err)
+
 }
