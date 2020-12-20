@@ -7,7 +7,6 @@ require (
 	github.com/confluentinc/confluent-kafka-go v1.5.2 // indirect
 	github.com/golang/snappy v0.0.2 // indirect
 	github.com/google/go-cmp v0.5.4 // indirect
-	github.com/joho/godotenv v1.3.0
 	github.com/klauspost/compress v1.11.3 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/tidwall/pretty v1.0.2 // indirect
