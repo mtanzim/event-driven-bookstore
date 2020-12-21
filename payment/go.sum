@@ -66,6 +66,8 @@ github.com/mtanzim/event-driven-bookstore/common-server v0.0.0-20201220121831-4d
 github.com/mtanzim/event-driven-bookstore/common-server v0.0.0-20201220121831-4dc756672530/go.mod h1:MVzZrcV+oOYjwGRmps0a4y2PE/3ABwWv+8G6Vsg5QQo=
 github.com/mtanzim/event-driven-bookstore/common-server v0.0.0-20201220123953-9103ab834a31 h1:/PwslAwQKGQCJuJVDIsRuMPCgY0NCCoHmx2v9Nrd8NM=
 github.com/mtanzim/event-driven-bookstore/common-server v0.0.0-20201220123953-9103ab834a31/go.mod h1:MVzZrcV+oOYjwGRmps0a4y2PE/3ABwWv+8G6Vsg5QQo=
+github.com/mtanzim/event-driven-bookstore/common-server v0.0.0-20201220124723-07ace40a2af1 h1:4yZA8CRLUsWdZ7XUNFaFIlFYgGwWOAiaj2sRpqaJUck=
+github.com/mtanzim/event-driven-bookstore/common-server v0.0.0-20201220124723-07ace40a2af1/go.mod h1:MVzZrcV+oOYjwGRmps0a4y2PE/3ABwWv+8G6Vsg5QQo=
 github.com/pelletier/go-toml v1.7.0/go.mod h1:vwGMzjaWMwyfHwgIBhI2YUM4fB6nL6lVAvS1LBMMhTE=
 github.com/pkg/errors v0.8.0/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=

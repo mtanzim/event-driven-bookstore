@@ -7,9 +7,9 @@ import (
 
 	"github.com/gorilla/mux"
 	_ "github.com/joho/godotenv/autoload"
-	handler "github.com/mtanzim/event-driven-bookstore/bookstore-server/handler"
+	"github.com/mtanzim/event-driven-bookstore/bookstore-server/handler"
 	"github.com/mtanzim/event-driven-bookstore/bookstore-server/service"
-	persister "github.com/mtanzim/event-driven-bookstore/common-server/persister"
+	"github.com/mtanzim/event-driven-bookstore/common-server/persister"
 	kafkaProducer "github.com/mtanzim/event-driven-bookstore/common-server/producer"
 	"github.com/rs/cors"
 )
@@ -46,5 +46,6 @@ func main() {
 	r.Use(loggingMiddleware)
 	// TODO: fix this
 	rWithCORS := cors.Default().Handler(r)
+	log.Println("Starting HTTP Server on port", port)
 	log.Fatal(http.ListenAndServe(":"+port, rWithCORS))
 }

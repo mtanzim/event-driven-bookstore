@@ -13,40 +13,33 @@ import (
 )
 
 type ShipmentService struct {
-	consumer   *kafka.Consumer
-	topic      string
-	collection *mongo.Collection
+	warehouseService *WarehouseService
 }
 
 func NewShipmentService(c *kafka.Consumer, topic string, coll *mongo.Collection) *ShipmentService {
-	return &ShipmentService{c, topic, coll}
+	return &ShipmentService{&WarehouseService{c, topic, coll}}
 }
 
 func (s ShipmentService) ConsumeMessages() {
-	defer s.consumer.Close()
-	log.Println(s.topic)
-	s.consumer.Subscribe(s.topic, nil)
-	for {
-		msg, err := s.consumer.ReadMessage(-1)
-		if err != nil {
-			log.Printf("Consumer error: %v (%v)\n", err, msg)
-			continue
-		}
-		log.Printf("Message on %s: %s\n", msg.TopicPartition, string(msg.Value))
-		var cart dto.CartShipment
-		if err := json.Unmarshal(msg.Value, &cart); err != nil {
-			log.Println(err)
-		}
+	// TODO: is this idiomatic :/
+	s.warehouseService.ConsumeMessages(s.processShipmentRequest)
+}
 
-		shipmentRequest := dto.CartWarehouse{
-			ID:      cart.CartID,
-			Cart:    cart,
-			Shipped: false,
-			Paid:    false,
-		}
-		log.Println(shipmentRequest)
-		go s.persist(shipmentRequest)
+func (s ShipmentService) processShipmentRequest(msg *kafka.Message) {
+
+	var cart dto.CartShipment
+	if err := json.Unmarshal(msg.Value, &cart); err != nil {
+		log.Println(err)
 	}
+
+	shipmentRequest := dto.CartWarehouse{
+		ID:      cart.CartID,
+		Cart:    cart,
+		Shipped: false,
+		Paid:    false,
+	}
+	log.Println(shipmentRequest)
+	go s.persist(shipmentRequest)
 }
 
 func (s ShipmentService) persist(shipmentRequest dto.CartWarehouse) {
@@ -54,9 +47,9 @@ func (s ShipmentService) persist(shipmentRequest dto.CartWarehouse) {
 	defer cancel()
 
 	var existing bson.M
-	if err := s.collection.FindOne(ctx, bson.M{"_id": shipmentRequest.ID}).Decode(&existing); err != nil {
+	if err := s.warehouseService.collection.FindOne(ctx, bson.M{"_id": shipmentRequest.ID}).Decode(&existing); err != nil {
 		if err == mongo.ErrNoDocuments {
-			insertRes, insertErr := s.collection.InsertOne(ctx, shipmentRequest)
+			insertRes, insertErr := s.warehouseService.collection.InsertOne(ctx, shipmentRequest)
 			if insertErr != nil {
 				// TODO: ignore failed insert on duplicate?
 				log.Println(err)
