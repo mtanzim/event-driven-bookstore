@@ -14,6 +14,7 @@ func main() {
 	kafkaServer := os.Getenv("KAFKA_SERVER_ADDR")
 	groupID := os.Getenv("KAFKA_GROUP_ID")
 	shipmentTopic := os.Getenv("SHIPMENT_TOPIC")
+	paymentStatusTopic := os.Getenv("PROCESSED_PAYMENT_TOPIC")
 
 	uri := os.Getenv("MONGO_URI")
 	dbName := os.Getenv("MONGO_DB")
@@ -26,9 +27,14 @@ func main() {
 	shipmentKafkaConsumer := consumer.NewKafkaConsumer(kafkaServer, groupID)
 	shipmentService := service.NewShipmentService(shipmentKafkaConsumer, shipmentTopic, collection)
 
+	paymentStatusConsumer := consumer.NewKafkaConsumer(kafkaServer, groupID)
+	paymentStatusService := service.NewPaymentStatusService(paymentStatusConsumer, paymentStatusTopic, collection)
+
 	var wg sync.WaitGroup
 	wg.Add(1)
+	wg.Add(1)
 	go shipmentService.ConsumeMessages()
+	go paymentStatusService.ConsumeMessages()
 	wg.Wait()
 
 }

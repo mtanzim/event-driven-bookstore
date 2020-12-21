@@ -25,6 +25,5 @@ func (s WarehouseService) ConsumeMessages(processingFn func(msg *kafka.Message))
 		}
 		log.Printf("Message on %s: %s\n", msg.TopicPartition, string(msg.Value))
 		go processingFn(msg)
-
 	}
 }
