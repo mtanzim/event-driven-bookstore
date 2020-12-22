@@ -24,14 +24,14 @@ func main() {
 	warehouseCollName := os.Getenv("MONGO_COLL_WAREHOUSE")
 	warehouseCollection := db.Collection(warehouseCollName)
 
-	// warehousePaymentDLQCollName := os.Getenv("MONGO_COLL_PAYMENT_PENDING_ACK")
-	// warehousePaymentDLQColl := db.Collection(warehousePaymentDLQCollName)
+	warehousePaymentDLQCollName := os.Getenv("MONGO_COLL_PAYMENT_PENDING_ACK")
+	warehousePaymentDLQColl := db.Collection(warehousePaymentDLQCollName)
 
 	shipmentKafkaConsumer := consumer.NewKafkaConsumer(kafkaServer, groupID)
 	shipmentService := service.NewShipmentService(shipmentKafkaConsumer, shipmentTopic, warehouseCollection)
 
 	paymentStatusConsumer := consumer.NewKafkaConsumer(kafkaServer, groupID)
-	paymentStatusService := service.NewPaymentStatusService(paymentStatusConsumer, paymentStatusTopic, warehouseCollection)
+	paymentStatusService := service.NewPaymentStatusService(paymentStatusConsumer, paymentStatusTopic, warehouseCollection, warehousePaymentDLQColl)
 
 	var wg sync.WaitGroup
 	wg.Add(1)
