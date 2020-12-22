@@ -14,10 +14,11 @@ import (
 
 type PaymentStatusService struct {
 	warehouseService *WarehouseService
+	collection       *mongo.Collection
 }
 
 func NewPaymentStatusService(c *kafka.Consumer, topic string, coll *mongo.Collection) *PaymentStatusService {
-	return &PaymentStatusService{&WarehouseService{c, topic, coll}}
+	return &PaymentStatusService{&WarehouseService{c, topic}, coll}
 }
 
 func (s PaymentStatusService) ConsumeMessages() {
@@ -43,9 +44,9 @@ func (s PaymentStatusService) persist(paymentStatus dto.CartPaymentResponse) {
 	if paymentStatus.Approved {
 		update := bson.D{{"$set", bson.D{{"paid", true}}}}
 		filter := bson.M{"_id": paymentStatus.CartID}
-		updateRes, err := s.warehouseService.collection.UpdateOne(ctx, filter, update)
+		updateRes, err := s.collection.UpdateOne(ctx, filter, update)
 		if err != nil || updateRes.ModifiedCount != 1 {
-			log.Println("Failed to update shipment payment status!")
+			log.Println("Failed to update shipment payment status for cart id:", paymentStatus.CartID)
 		} else {
 			log.Println("Shipment", paymentStatus.CartID, "was paid for!")
 		}

@@ -21,14 +21,17 @@ func main() {
 
 	db, disconnectDb := persister.NewMongo(uri, dbName)
 	defer disconnectDb()
-	collName := os.Getenv("MONGO_COLL")
-	collection := db.Collection(collName)
+	warehouseCollName := os.Getenv("MONGO_COLL_WAREHOUSE")
+	warehouseCollection := db.Collection(warehouseCollName)
+
+	// warehousePaymentDLQCollName := os.Getenv("MONGO_COLL_PAYMENT_PENDING_ACK")
+	// warehousePaymentDLQColl := db.Collection(warehousePaymentDLQCollName)
 
 	shipmentKafkaConsumer := consumer.NewKafkaConsumer(kafkaServer, groupID)
-	shipmentService := service.NewShipmentService(shipmentKafkaConsumer, shipmentTopic, collection)
+	shipmentService := service.NewShipmentService(shipmentKafkaConsumer, shipmentTopic, warehouseCollection)
 
 	paymentStatusConsumer := consumer.NewKafkaConsumer(kafkaServer, groupID)
-	paymentStatusService := service.NewPaymentStatusService(paymentStatusConsumer, paymentStatusTopic, collection)
+	paymentStatusService := service.NewPaymentStatusService(paymentStatusConsumer, paymentStatusTopic, warehouseCollection)
 
 	var wg sync.WaitGroup
 	wg.Add(1)

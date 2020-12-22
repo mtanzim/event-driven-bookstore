@@ -14,10 +14,11 @@ import (
 
 type ShipmentService struct {
 	warehouseService *WarehouseService
+	collection       *mongo.Collection
 }
 
 func NewShipmentService(c *kafka.Consumer, topic string, coll *mongo.Collection) *ShipmentService {
-	return &ShipmentService{&WarehouseService{c, topic, coll}}
+	return &ShipmentService{&WarehouseService{c, topic}, coll}
 }
 
 func (s ShipmentService) ConsumeMessages() {
@@ -47,9 +48,9 @@ func (s ShipmentService) persist(shipmentRequest dto.CartWarehouse) {
 	defer cancel()
 
 	var existing bson.M
-	if err := s.warehouseService.collection.FindOne(ctx, bson.M{"_id": shipmentRequest.ID}).Decode(&existing); err != nil {
+	if err := s.collection.FindOne(ctx, bson.M{"_id": shipmentRequest.ID}).Decode(&existing); err != nil {
 		if err == mongo.ErrNoDocuments {
-			insertRes, insertErr := s.warehouseService.collection.InsertOne(ctx, shipmentRequest)
+			insertRes, insertErr := s.collection.InsertOne(ctx, shipmentRequest)
 			if insertErr != nil {
 				// TODO: ignore failed insert on duplicate?
 				log.Println(err)

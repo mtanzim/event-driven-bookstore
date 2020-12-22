@@ -3,14 +3,12 @@ package service
 import (
 	"log"
 
-	"go.mongodb.org/mongo-driver/mongo"
 	"gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 )
 
 type WarehouseService struct {
-	consumer   *kafka.Consumer
-	topic      string
-	collection *mongo.Collection
+	consumer *kafka.Consumer
+	topic    string
 }
 
 func (s WarehouseService) ConsumeMessages(processingFn func(msg *kafka.Message)) {
