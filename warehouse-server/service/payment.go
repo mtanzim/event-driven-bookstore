@@ -8,7 +8,6 @@ import (
 
 	dto "github.com/mtanzim/event-driven-bookstore/common-server/dto"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 )
@@ -36,11 +35,9 @@ func (s PaymentStatusService) processPaymentStatus(msg *kafka.Message) {
 	go s.persist(paymentStatus)
 }
 
-type CartPaymentDLQItem struct {
-	CartID primitive.ObjectID `bson:"cartId,omitempty" json:"cartId"`
-}
-
 // TODO: synchronize? What if payment notification comes before the shipment request is registered
+// Is this a proper way to build a DLQ?
+// Can this be done with Kafka? Come back to this later
 func (s PaymentStatusService) persist(paymentStatus dto.CartPaymentResponse) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -54,7 +51,6 @@ func (s PaymentStatusService) persist(paymentStatus dto.CartPaymentResponse) {
 		if err != nil || updateRes.ModifiedCount != 1 {
 			log.Println("Failed to update shipment payment status for cart id:", paymentStatus.CartID)
 			log.Println("Inserting approved payment into DLQ")
-			// TODO: can this be done with Kafka? Come back to this later
 			failedCartItem := CartPaymentDLQItem{CartID: paymentStatus.CartID}
 			s.paymentDLQCollection.InsertOne(ctx, failedCartItem)
 		} else {

@@ -33,9 +33,13 @@ func main() {
 	paymentStatusConsumer := consumer.NewKafkaConsumer(kafkaServer, groupID)
 	paymentStatusService := service.NewPaymentStatusService(paymentStatusConsumer, paymentStatusTopic, warehouseCollection, warehousePaymentDLQColl)
 
+	dqlMonitorService := service.NewDLQMonitorService(warehousePaymentDLQColl, warehouseCollection)
+
 	var wg sync.WaitGroup
 	wg.Add(1)
 	wg.Add(1)
+	wg.Add(1)
+	go dqlMonitorService.Monitor()
 	go shipmentService.ConsumeMessages()
 	go paymentStatusService.ConsumeMessages()
 	wg.Wait()
