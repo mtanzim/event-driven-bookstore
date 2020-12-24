@@ -6,6 +6,7 @@ export interface Book {
   author: string;
   price: string;
   stock: number;
+  stagedQty: number;
 }
 
 const uri = process.env.MONGO_URI || "mongodb://localhost:27017";
@@ -21,9 +22,9 @@ async function seed() {
     const db = client.db(dbName);
     const coll = db.collection(collName);
     try {
-      await coll.drop()
-    } catch(err) {
-      console.warn(err)
+      await coll.drop();
+    } catch (err) {
+      console.warn(err);
     }
     // placeholder fake data
     const fakeBooks: Book[] = [...Array(SIZE).keys()].map((_) => ({
@@ -31,6 +32,7 @@ async function seed() {
       author: `${faker.name.firstName()} ${faker.name.lastName()}`,
       price: faker.commerce.price(10, 300, 2),
       stock: Math.floor(faker.random.number({ min: 2, max: 20 })),
+      stagedQty: 0,
     }));
     const res = await coll.insertMany(fakeBooks, { ordered: true });
     console.log(`${res.insertedCount} documents were inserted.`);

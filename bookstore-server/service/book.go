@@ -33,7 +33,18 @@ func (s BookService) GetBooks() ([]dto.Book, error) {
 	if err = cursor.All(ctx, &dat); err != nil {
 		return nil, errors.New("Cannot get data")
 	}
+	bookResponse := generateBookResponse(dat)
 
-	return dat, nil
+	return bookResponse, nil
 
+}
+
+func generateBookResponse(dat []dto.Book) []dto.Book {
+	var bookResponse []dto.Book
+	for _, book := range dat {
+		bookRes := book
+		// bookRes.Stock = book.Stock - book.StagedQty
+		bookResponse = append(bookResponse, bookRes)
+	}
+	return bookResponse
 }
