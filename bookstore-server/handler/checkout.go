@@ -7,6 +7,7 @@ import (
 
 	service "github.com/mtanzim/event-driven-bookstore/bookstore-server/service"
 	dto "github.com/mtanzim/event-driven-bookstore/common-server/dto"
+	"go.mongodb.org/mongo-driver/mongo"
 	"gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 )
 
@@ -14,8 +15,8 @@ type CheckoutHandler struct {
 	service *service.CheckoutService
 }
 
-func NewCheckoutHandler(p *kafka.Producer, topics *service.CheckoutTopics) *CheckoutHandler {
-	s := service.NewCheckoutService(p, topics)
+func NewCheckoutHandler(p *kafka.Producer, topics *service.CheckoutTopics, collection *mongo.Collection) *CheckoutHandler {
+	s := service.NewCheckoutService(p, topics, collection)
 	return &CheckoutHandler{s}
 }
 

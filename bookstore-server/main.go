@@ -37,8 +37,10 @@ func main() {
 	producer := kafkaProducer.NewKafkaProducer(kafkaServerAddr)
 	defer producer.Close()
 
-	bookHandler := handler.NewBookHandler(db)
-	checkoutHandler := handler.NewCheckoutHandler(producer, &checkoutTopics)
+	bookCollection := db.Collection("books")
+
+	bookHandler := handler.NewBookHandler(bookCollection)
+	checkoutHandler := handler.NewCheckoutHandler(producer, &checkoutTopics, bookCollection)
 	r := mux.NewRouter()
 	port := os.Getenv("REST_PORT")
 	r.HandleFunc("/api/books", bookHandler.GetBooks).Methods(http.MethodGet, http.MethodOptions)

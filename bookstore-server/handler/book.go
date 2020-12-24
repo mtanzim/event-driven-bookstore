@@ -13,8 +13,8 @@ type BookHandler struct {
 	service *service.BookService
 }
 
-func NewBookHandler(db *mongo.Database) *BookHandler {
-	s := service.NewBookService(db, "books")
+func NewBookHandler(collection *mongo.Collection) *BookHandler {
+	s := service.NewBookService(collection)
 	return &BookHandler{s}
 }
 

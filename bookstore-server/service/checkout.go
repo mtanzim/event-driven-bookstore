@@ -7,6 +7,7 @@ import (
 
 	dto "github.com/mtanzim/event-driven-bookstore/common-server/dto"
 	primitive "go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 )
 
@@ -16,21 +17,30 @@ type CheckoutTopics struct {
 }
 
 type CheckoutService struct {
-	producer *kafka.Producer
-	topics   *CheckoutTopics
+	producer   *kafka.Producer
+	topics     *CheckoutTopics
+	collection *mongo.Collection
 }
 
-func NewCheckoutService(p *kafka.Producer, topics *CheckoutTopics) *CheckoutService {
-	return &CheckoutService{p, topics}
+func NewCheckoutService(p *kafka.Producer, topics *CheckoutTopics, collection *mongo.Collection) *CheckoutService {
+	return &CheckoutService{p, topics, collection}
 }
 
 func (s CheckoutService) CheckoutCart(cart *dto.Cart) *dto.CartResponse {
 	id := primitive.NewObjectID()
+	go s.updateStock(cart.Items)
 	go s.requestCartShipment(cart, id)
 	go s.requestCartPayment(cart, id)
 	cartResponse := dto.CartResponse{CartID: id, Status: "requested"}
 	return &cartResponse
 
+}
+
+func (s CheckoutService) updateStock(items []dto.CartItem) {
+	for _, item := range items {
+		log.Println("updating stock for book", item.Book)
+		log.Println("Following qty will be staged", item.Qty)
+	}
 }
 
 // TODO: fire off shipment message
@@ -54,7 +64,6 @@ func (s CheckoutService) requestCartShipment(cart *dto.Cart, id primitive.Object
 
 }
 
-// TODO: fire off a payment message
 // TODO: add encryption to credit card data!
 // https://www.melvinvivas.com/how-to-encrypt-and-decrypt-data-using-aes/
 func (s CheckoutService) requestCartPayment(cart *dto.Cart, id primitive.ObjectID) {

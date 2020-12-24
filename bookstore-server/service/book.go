@@ -17,8 +17,7 @@ type BookService struct {
 	collection *mongo.Collection
 }
 
-func NewBookService(db *mongo.Database, collName string) *BookService {
-	collection := db.Collection(collName)
+func NewBookService(collection *mongo.Collection) *BookService {
 	return &BookService{collection}
 }
 
