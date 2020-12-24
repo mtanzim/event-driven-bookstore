@@ -3,16 +3,29 @@ import { useForm } from "react-hook-form";
 import { CheckoutFormValues } from "./interfaces";
 
 interface Props {
-  onSubmit: (data: CheckoutFormValues) => Promise<string>;
+  onSubmit: (data: CheckoutFormValues) => Promise<void>;
 }
+
+const isEmptyError = (error: object) =>
+  Object.keys(error).length === 0 && error.constructor === Object;
+
 export function Checkout({ onSubmit }: Props) {
-  const { register, handleSubmit, errors } = useForm();
+  const { register, handleSubmit, errors, reset } = useForm();
   console.log(errors);
+
+  async function submitAndClear(data: CheckoutFormValues) {
+    try {
+      await onSubmit(data);
+      reset();
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return (
     <form
       style={{ display: "flex", flexDirection: "column", padding: 10 }}
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(submitAndClear)}
     >
       <input
         type="text"
@@ -35,7 +48,7 @@ export function Checkout({ onSubmit }: Props) {
         type="number"
         placeholder="Card Number"
         name="cardNum"
-        ref={register}
+        ref={register({ required: true })}
       />
       <input
         type="text"
@@ -44,6 +57,7 @@ export function Checkout({ onSubmit }: Props) {
         ref={register({ required: true })}
       />
       <input type="submit" />
+      <p>{isEmptyError(errors) ? "" : "Error on form"}</p>
     </form>
   );
 }

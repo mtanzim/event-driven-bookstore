@@ -5,35 +5,40 @@ import { Checkout } from "./Checkout";
 import { CheckoutFormValues, CheckoutDTO } from "./interfaces";
 import { fetchBooks, Book, CartItem } from "../api";
 
-function checkoutCart(cart: CartItem[]) {
-  return async function (values: CheckoutFormValues) {
-    const body: CheckoutDTO = {
-      items: cart,
-      cartUserInformation: values,
-    };
-    console.log(body);
-    const res = await fetch("http://localhost:8080/api/checkout", {
-      method: "POST",
-      body: JSON.stringify(body),
-    });
-    return res.text();
-  };
-}
-
 export function Store() {
   const [books, setBooks] = useState(new Map<string, Book>());
   const [cart, setCart] = useState(new Map<string, CartItem>());
   const [cartTotal, setCartTotal] = useState(0.0);
 
-  useEffect(() => {
-    (async () => {
-      const booksRaw = await fetchBooks();
-      const bookMap = new Map<string, Book>();
-      booksRaw.forEach((book) => {
-        bookMap.set(book.id, book);
+  async function getBooks() {
+    const booksRaw = await fetchBooks();
+    const bookMap = new Map<string, Book>();
+    booksRaw.forEach((book) => {
+      bookMap.set(book.id, book);
+    });
+    setBooks(bookMap);
+  }
+
+  function checkoutCart(cart: CartItem[]) {
+    return async function (values: CheckoutFormValues) {
+      const body: CheckoutDTO = {
+        items: cart,
+        cartUserInformation: values,
+      };
+      console.log(body);
+      const res = await fetch("http://localhost:8080/api/checkout", {
+        method: "POST",
+        body: JSON.stringify(body),
       });
-      setBooks(bookMap);
-    })();
+      if (res.status == 200) {
+        getBooks();
+        clearCart();
+      }
+    };
+  }
+
+  useEffect(() => {
+    getBooks();
   }, []);
   useEffect(calculateTotal, [cart]);
 
