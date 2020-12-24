@@ -31,17 +31,23 @@ func NewCheckoutService(p *kafka.Producer, topics *CheckoutTopics, collection *m
 
 func (s CheckoutService) CheckoutCart(cart *dto.Cart) *dto.CartResponse {
 	id := primitive.NewObjectID()
-	go s.stageStock(cart.Items)
+	doneUpdate := make(chan bool)
+	go s.stageStock(cart.Items, doneUpdate)
 	go s.requestCartShipment(cart, id)
 	go s.requestCartPayment(cart, id)
 	cartResponse := dto.CartResponse{CartID: id, Status: "requested"}
+	<-doneUpdate
 	return &cartResponse
 
 }
 
-func (s CheckoutService) stageStock(items []dto.CartItem) {
+func (s CheckoutService) stageStock(items []dto.CartItem, done chan bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), CTXTimeout*time.Second)
 	defer cancel()
+	defer func() {
+		done <- true
+	}()
+
 	for _, item := range items {
 		log.Println("updating stock for book", item.Book)
 		log.Println("Following qty will be staged", item.Qty)

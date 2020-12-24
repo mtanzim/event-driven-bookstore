@@ -79,6 +79,10 @@ github.com/markbates/safe v1.0.1/go.mod h1:nAqgmRi7cY2nqMc92/bSEeQA+R4OheNU2T1kN
 github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe/go.mod h1:wL8QJuTMNUDYhXwkmfOly8iTdp5TEcJFWZD2D7SIkUc=
 github.com/mtanzim/event-driven-bookstore/common-server v0.0.0-20201224192621-2c3e5eadc134 h1:EsUTCoMd8IRWiGKPHVuPVcKLcAHJ1xzr9/F6YmN0rRo=
 github.com/mtanzim/event-driven-bookstore/common-server v0.0.0-20201224192621-2c3e5eadc134/go.mod h1:MVzZrcV+oOYjwGRmps0a4y2PE/3ABwWv+8G6Vsg5QQo=
+github.com/mtanzim/event-driven-bookstore/common-server v0.0.0-20201224201644-9daa352f5789 h1:dnrXgtv5akRpQrlmHFStBS/rOhppRzGISBBgFHc+L+o=
+github.com/mtanzim/event-driven-bookstore/common-server v0.0.0-20201224201644-9daa352f5789/go.mod h1:MVzZrcV+oOYjwGRmps0a4y2PE/3ABwWv+8G6Vsg5QQo=
+github.com/mtanzim/event-driven-bookstore/common-server v0.0.0-20201224203702-6e1bc5c24f96 h1:icOWuFuP6uE5o7JC6tpl1KpX74MNDD3VpSqkb9ZL8kE=
+github.com/mtanzim/event-driven-bookstore/common-server v0.0.0-20201224203702-6e1bc5c24f96/go.mod h1:MVzZrcV+oOYjwGRmps0a4y2PE/3ABwWv+8G6Vsg5QQo=
 github.com/pelletier/go-toml v1.7.0/go.mod h1:vwGMzjaWMwyfHwgIBhI2YUM4fB6nL6lVAvS1LBMMhTE=
 github.com/pkg/errors v0.8.0/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=

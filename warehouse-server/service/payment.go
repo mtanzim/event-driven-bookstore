@@ -35,9 +35,9 @@ func (s PaymentStatusService) processPaymentStatus(msg *kafka.Message) {
 	go s.persist(paymentStatus)
 }
 
-// TODO: synchronize? What if payment notification comes before the shipment request is registered
+// TODO: synchronize?
 // Is this a proper way to build a DLQ?
-// Can this be done with Kafka? Come back to this later
+// Can this be done with Kafka? Come back to this later.
 func (s PaymentStatusService) persist(paymentStatus dto.CartPaymentResponse) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -45,8 +45,8 @@ func (s PaymentStatusService) persist(paymentStatus dto.CartPaymentResponse) {
 	log.Println(paymentStatus)
 
 	if paymentStatus.Approved {
-		update := bson.D{{"$set", bson.D{{"paid", true}}}}
 		filter := bson.M{"_id": paymentStatus.CartID}
+		update := bson.D{{"$set", bson.D{{"paid", true}}}}
 		updateRes, err := s.warehouseCollection.UpdateOne(ctx, filter, update)
 		if err != nil || updateRes.ModifiedCount != 1 {
 			log.Println("Failed to update shipment payment status for cart id:", paymentStatus.CartID)
@@ -58,5 +58,10 @@ func (s PaymentStatusService) persist(paymentStatus dto.CartPaymentResponse) {
 		}
 
 	}
+	// TODO: Payment rejection logic
+	// if rejected, fire of 'unstage' message on broker with []CartItem
+	// store microservice can update staged and stock qty
+	// Alternatively store can directly listen for payment rejections?
+	// Then, store will need cart persistence as well
 
 }
