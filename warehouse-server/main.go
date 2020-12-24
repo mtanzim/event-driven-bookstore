@@ -2,7 +2,6 @@ package main
 
 import (
 	"os"
-	"sync"
 
 	_ "github.com/joho/godotenv/autoload"
 	consumer "github.com/mtanzim/event-driven-bookstore/common-server/consumer"
@@ -35,13 +34,9 @@ func main() {
 
 	dqlMonitorService := service.NewDLQMonitorService(warehousePaymentDLQColl, warehouseCollection)
 
-	var wg sync.WaitGroup
-	wg.Add(1)
-	wg.Add(1)
-	wg.Add(1)
+	done := make(chan bool)
 	go dqlMonitorService.Monitor()
 	go shipmentService.ConsumeMessages()
 	go paymentStatusService.ConsumeMessages()
-	wg.Wait()
-
+	<-done
 }
