@@ -43,8 +43,10 @@ func generateBookResponse(dat []dto.Book) []dto.Book {
 	var bookResponse []dto.Book
 	for _, book := range dat {
 		bookRes := book
-		// bookRes.Stock = book.Stock - book.StagedQty
-		bookResponse = append(bookResponse, bookRes)
+		if newQty := book.Stock - book.StagedQty; newQty > 0 {
+			bookRes.Stock = newQty
+			bookResponse = append(bookResponse, bookRes)
+		}
 	}
 	return bookResponse
 }

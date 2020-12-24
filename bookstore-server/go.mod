@@ -7,7 +7,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/joho/godotenv v1.3.0
 	github.com/klauspost/compress v1.11.4 // indirect
-	github.com/mtanzim/event-driven-bookstore/common-server v0.0.0-20201224021942-b3d7e574c3af
+	github.com/mtanzim/event-driven-bookstore/common-server v0.0.0-20201224192621-2c3e5eadc134
 	github.com/rs/cors v1.7.0
 	go.mongodb.org/mongo-driver v1.4.4
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad // indirect

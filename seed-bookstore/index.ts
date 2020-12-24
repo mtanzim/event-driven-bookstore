@@ -23,6 +23,7 @@ async function seed() {
     const coll = db.collection(collName);
     try {
       await coll.drop();
+      console.log(`Dropped collection ${collName}`);
     } catch (err) {
       console.warn(err);
     }
@@ -31,10 +32,11 @@ async function seed() {
       title: faker.random.words(3),
       author: `${faker.name.firstName()} ${faker.name.lastName()}`,
       price: faker.commerce.price(10, 300, 2),
-      stock: Math.floor(faker.random.number({ min: 2, max: 20 })),
-      stagedQty: 0,
+      stock: Math.floor(faker.random.number({ min: 10, max: 50 })),
+      stagedQty: Math.floor(faker.random.number({ min: 0, max: 9 })),
     }));
     const res = await coll.insertMany(fakeBooks, { ordered: true });
+    console.log(JSON.stringify(fakeBooks, null, 2));
     console.log(`${res.insertedCount} documents were inserted.`);
   } catch (err) {
     console.error(err);
