@@ -3,8 +3,8 @@ package dto
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
 type CartItem struct {
-	Book Book  `json:"book"`
-	Qty  int32 `json:qty`
+	Book BookInCart `json:"book"`
+	Qty  int32      `json:qty`
 }
 
 type CartUserInformation struct {

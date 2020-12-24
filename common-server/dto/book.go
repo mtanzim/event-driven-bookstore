@@ -10,3 +10,10 @@ type Book struct {
 	Stock     int32              `bson:"stock" json:"stock"`
 	StagedQty int32              `bson:"stagedQty" json:"stagedQty"`
 }
+
+type BookInCart struct {
+	ID     primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	Title  string             `bson:"title" json:"title"`
+	Author string             `bson:"author" json:"author"`
+	Price  string             `bson:"price" json:"price"`
+}
