@@ -21,6 +21,23 @@ func NewShipmentService(c *kafka.Consumer, topic string, coll *mongo.Collection)
 	return &ShipmentService{&WarehouseService{c, topic}, coll}
 }
 
+func (s ShipmentService) GetPendingShipments() ([]dto.CartWarehouse, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var data []dto.CartWarehouse
+	cursor, err := s.collection.Find(ctx, bson.M{}, nil)
+	if err != nil {
+		return nil, err
+
+	}
+	if err = cursor.All(ctx, &data); err != nil {
+		return nil, err
+	}
+	return data, nil
+
+}
+
 func (s ShipmentService) ConsumeMessages() {
 	// TODO: is this idiomatic :/
 	s.warehouseService.ConsumeMessages(s.processShipmentRequest)
