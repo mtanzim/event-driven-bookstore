@@ -5,8 +5,11 @@ async function fetchData() {
   return shipments;
 }
 
+function generateBtnId(cartId) {
+  return `btn-${cartId}`;
+}
+
 function renderData(rows) {
-  const buttonIds = [];
   document.getElementById("root").innerHTML = `<div class="grid-container">
 ${rows
   .map((row) => {
@@ -15,12 +18,12 @@ ${rows
       shipped,
       paid,
     } = row;
-    const curBtnId = `btn-${cartId}`;
-    buttonIds.push(curBtnId);
+
     // TODO: do this from the backend
     if (shipped) {
       return "";
     }
+
     return `
       <div id=${cartId} class="grid-item">
         <h2><code>${cartId}</code>\t${paid ? "Paid" : "Pending"}</h2>
@@ -37,16 +40,23 @@ ${rows
           )
           .join("")}
         </ul>
-        <button ${paid ? "" : "disabled"} id="${curBtnId}">Ship it!</button>
+        <button ${paid ? "" : "disabled"} id="${generateBtnId(
+      cartId
+    )}">Ship it!</button>
       </div>
   `;
   })
   .join("")}
 </div>`;
-  return buttonIds;
 }
 
-function attachBtnHandlers(buttonIds) {
+function attachBtnHandlers(rows) {
+  const buttonIds = rows.map((row) => {
+    const {
+      cart: { cartId },
+    } = row;
+    return generateBtnId(cartId);
+  });
   buttonIds.forEach((btnId) => {
     document.getElementById(btnId).onclick = () => alert(`${btnId} Clicked`);
   });
@@ -57,7 +67,8 @@ async function main() {
     document.getElementById("root").innerHTML = `<h4>Loading...</h4>`;
     const rows = await fetchData();
     console.log(JSON.stringify(rows));
-    attachBtnHandlers(renderData(rows));
+    renderData(rows);
+    attachBtnHandlers(rows);
   } catch (err) {
     console.log(err);
     document.getElementById("root").innerHTML = `<h4>Failed to load data!</h4>`;
