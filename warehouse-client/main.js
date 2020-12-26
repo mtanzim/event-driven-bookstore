@@ -1,12 +1,20 @@
-import { items as rows } from "./mock.js";
+const BASE_URL = "http://localhost:8082/";
+async function fetchData() {
+  const res = await fetch(`${BASE_URL}/api/shipment`);
+  const shipments = await res.json();
+  return shipments;
+}
 
-function main() {
-  console.log(JSON.stringify(rows));
-  document.getElementById("root").innerHTML = `<div class="grid-container"> 
+async function main() {
+  try {
+    document.getElementById("root").innerHTML = `<h4>Loading...</h4>`;
+    const rows = await fetchData();
+    console.log(JSON.stringify(rows));
+    document.getElementById("root").innerHTML = `<div class="grid-container"> 
   ${rows
     .map((row) => {
       const {
-        cart: { _id, items, address, email, phone },
+        cart: { cartId: _id, items, address, email, phone },
         shipped,
         paid,
       } = row;
@@ -36,6 +44,10 @@ function main() {
     })
     .join("")}
   </div>`;
+  } catch (err) {
+    console.log(err);
+    document.getElementById("root").innerHTML = `<h4>Failed to load data!</h4>`;
+  }
 }
 
 main();
