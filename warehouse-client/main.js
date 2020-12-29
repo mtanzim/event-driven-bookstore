@@ -1,4 +1,5 @@
 const BASE_URL = "http://localhost:8082";
+const DOM_ROOT = "root";
 async function fetchData() {
   const res = await fetch(`${BASE_URL}/api/shipment`);
   const shipments = await res.json();
@@ -32,7 +33,14 @@ function generateBtnHandler(cartId) {
 }
 
 function renderData(rows) {
-  document.getElementById("root").innerHTML = `<div class="grid-container">
+  if (rows.length === 0) {
+    document.getElementById(
+      DOM_ROOT
+    ).innerHTML = `<h4>No pending shipments.</h4>`;
+    return;
+  }
+
+  document.getElementById(DOM_ROOT).innerHTML = `<div class="grid-container">
 ${rows
   .map((row) => {
     const {
@@ -80,14 +88,15 @@ function attachBtnHandlers(rows) {
 
 async function main() {
   try {
-    document.getElementById("root").innerHTML = `<h4>Loading...</h4>`;
+    document.getElementById(DOM_ROOT).innerHTML = `<h4>Loading...</h4>`;
     const rows = await fetchData();
-    console.log(JSON.stringify(rows));
     renderData(rows);
     attachBtnHandlers(rows);
   } catch (err) {
     console.log(err);
-    document.getElementById("root").innerHTML = `<h4>Failed to load data!</h4>`;
+    document.getElementById(
+      DOM_ROOT
+    ).innerHTML = `<h4>Failed to load data!</h4>`;
     return;
   }
 }

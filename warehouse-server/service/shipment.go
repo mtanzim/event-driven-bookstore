@@ -38,6 +38,10 @@ func (s ShipmentService) GetPendingShipments() ([]dto.CartWarehouse, error) {
 	if err = cursor.All(ctx, &data); err != nil {
 		return nil, err
 	}
+
+	if data == nil {
+		return []dto.CartWarehouse{}, nil
+	}
 	return data, nil
 
 }
