@@ -72,7 +72,6 @@ ${rows
   })
   .join("")}
 </div>`;
-  return Promise.resolve();
 }
 
 function attachBtnHandlers(rows) {
