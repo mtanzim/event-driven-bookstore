@@ -2,6 +2,8 @@ package dto
 
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
+// TODO: how to implement DRY here?
+
 type CartItem struct {
 	Book BookInCart `json:"book"`
 	Qty  int32      `json:"qty"`
@@ -54,4 +56,9 @@ type CartWarehouse struct {
 	Cart    CartShipment       `json:"cart"`
 	Shipped bool               `json:"shipped" bson:"shipped"`
 	Paid    bool               `json:"paid" bson:"paid"`
+}
+
+type CartWarehouseShipped struct {
+	ID   primitive.ObjectID `bson:"_id,omitempty" json:"cartId"`
+	Cart CartShipment       `json:"cart"`
 }
