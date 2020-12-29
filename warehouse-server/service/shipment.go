@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"log"
 	"time"
 
@@ -15,12 +14,14 @@ import (
 )
 
 type ShipmentService struct {
-	warehouseService *WarehouseService
-	collection       *mongo.Collection
+	warehouseService       *WarehouseService
+	collection             *mongo.Collection
+	producer               *kafka.Producer
+	shipmentCompletedTopic string
 }
 
-func NewShipmentService(c *kafka.Consumer, topic string, coll *mongo.Collection) *ShipmentService {
-	return &ShipmentService{&WarehouseService{c, topic}, coll}
+func NewShipmentService(c *kafka.Consumer, p *kafka.Producer, shipmentTopic, shipmentCompletedTopic string, coll *mongo.Collection) *ShipmentService {
+	return &ShipmentService{&WarehouseService{c, shipmentTopic}, coll, p, shipmentCompletedTopic}
 }
 
 func (s ShipmentService) GetPendingShipments() ([]dto.CartWarehouse, error) {
@@ -41,22 +42,34 @@ func (s ShipmentService) GetPendingShipments() ([]dto.CartWarehouse, error) {
 
 }
 
-func (s ShipmentService) PostPendingShipemt(cart *localDTO.PostShipment) (*localDTO.PostShipment, error) {
+func (s ShipmentService) PostPendingShipemt(cart *localDTO.PostShipment) (*dto.CartWarehouse, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	filter := bson.M{"_id": cart.CartID}
 	update := bson.D{{"$set", bson.D{{"shipped", true}}}}
 
-	updateRes, updateErr := s.collection.UpdateOne(ctx, filter, update)
+	var cartToUpdate dto.CartWarehouse
+	updateErr := s.collection.FindOneAndUpdate(ctx, filter, update).Decode(&cartToUpdate)
 	if updateErr != nil {
 		return nil, updateErr
 	}
-	if updateRes.ModifiedCount == 1 || updateRes.UpsertedCount == 1 {
-		log.Println("Successfully shipped cart:", cart.CartID)
-		return cart, nil
+	go s.sendMessageToProducer(&cartToUpdate)
+	return &cartToUpdate, nil
+
+}
+
+func (s ShipmentService) sendMessageToProducer(cart *dto.CartWarehouse) {
+	msg, err := json.Marshal(cart)
+	if err != nil {
+		log.Println(err)
+		return
 	}
-	return nil, errors.New("Something went wrong.")
+	err = s.producer.Produce(&kafka.Message{
+		TopicPartition: kafka.TopicPartition{Topic: &s.shipmentCompletedTopic, Partition: kafka.PartitionAny},
+		Value:          msg,
+	}, nil)
+	log.Println(err)
 
 }
 

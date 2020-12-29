@@ -23,7 +23,7 @@ func NewDLQMonitorService(paymentDLQColl, warehouseColl *mongo.Collection) *DLQM
 func (s DLQMonitorService) Monitor() {
 	for {
 		go func() {
-			log.Println("Monitoring Payment DLQ")
+			// log.Println("Monitoring Payment DLQ")
 			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 			defer cancel()
 			opts := options.Find()

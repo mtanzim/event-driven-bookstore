@@ -37,7 +37,6 @@ ${rows
   .map((row) => {
     const {
       cart: { cartId, items, address, email, phone },
-      shipped,
       paid,
     } = row;
 
@@ -52,7 +51,7 @@ ${rows
         <ul>
         ${items
           .map(
-            ({ book, Qty: qty }) =>
+            ({ book, qty }) =>
               `<li>${book.title} - ${book.author} - ${qty}</li>`
           )
           .join("")}

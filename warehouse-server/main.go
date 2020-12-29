@@ -9,6 +9,7 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	consumer "github.com/mtanzim/event-driven-bookstore/common-server/consumer"
 	persister "github.com/mtanzim/event-driven-bookstore/common-server/persister"
+	"github.com/mtanzim/event-driven-bookstore/common-server/producer"
 	handler "github.com/mtanzim/event-driven-bookstore/warehouse-server/handler"
 	service "github.com/mtanzim/event-driven-bookstore/warehouse-server/service"
 	"github.com/rs/cors"
@@ -26,6 +27,7 @@ func main() {
 	groupID := os.Getenv("KAFKA_GROUP_ID")
 	shipmentTopic := os.Getenv("SHIPMENT_TOPIC")
 	paymentStatusTopic := os.Getenv("PROCESSED_PAYMENT_TOPIC")
+	shipmentCompletedTopic := os.Getenv("CART_SHIPMENT_COMPLETE_TOPIC")
 
 	uri := os.Getenv("MONGO_URI")
 	dbName := os.Getenv("MONGO_DB")
@@ -39,7 +41,9 @@ func main() {
 	warehousePaymentDLQColl := db.Collection(warehousePaymentDLQCollName)
 
 	shipmentKafkaConsumer := consumer.NewKafkaConsumer(kafkaServer, groupID)
-	shipmentService := service.NewShipmentService(shipmentKafkaConsumer, shipmentTopic, warehouseCollection)
+	shipmentKafkaProducer := producer.NewKafkaProducer(kafkaServer)
+	// TODO: arg list too long! Combine into struct?
+	shipmentService := service.NewShipmentService(shipmentKafkaConsumer, shipmentKafkaProducer, shipmentTopic, shipmentCompletedTopic, warehouseCollection)
 
 	paymentStatusConsumer := consumer.NewKafkaConsumer(kafkaServer, groupID)
 	paymentStatusService := service.NewPaymentStatusService(paymentStatusConsumer, paymentStatusTopic, warehouseCollection, warehousePaymentDLQColl)
