@@ -7,6 +7,7 @@ import (
 	"time"
 
 	dto "github.com/mtanzim/event-driven-bookstore/common-server/dto"
+	localDTO "github.com/mtanzim/event-driven-bookstore/warehouse-server/dto"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
@@ -51,7 +52,7 @@ func (s PaymentStatusService) persist(paymentStatus dto.CartPaymentResponse) {
 		if err != nil || updateRes.ModifiedCount != 1 {
 			log.Println("Failed to update shipment payment status for cart id:", paymentStatus.CartID)
 			log.Println("Inserting approved payment into DLQ")
-			failedCartItem := CartPaymentDLQItem{CartID: paymentStatus.CartID}
+			failedCartItem := localDTO.CartPaymentDLQItem{CartID: paymentStatus.CartID}
 			s.paymentDLQCollection.InsertOne(ctx, failedCartItem)
 		} else {
 			log.Println("Shipment", paymentStatus.CartID, "was paid for!")

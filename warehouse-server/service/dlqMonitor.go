@@ -5,7 +5,9 @@ import (
 	"log"
 	"time"
 
+	localDTO "github.com/mtanzim/event-driven-bookstore/warehouse-server/dto"
 	"go.mongodb.org/mongo-driver/bson"
+
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -35,7 +37,7 @@ func (s DLQMonitorService) Monitor() {
 				log.Println(err)
 			}
 			for cur.Next(ctx) {
-				var item CartPaymentDLQItem
+				var item localDTO.CartPaymentDLQItem
 				curErr := cur.Decode(&item)
 				log.Println("In payment DLQ", item)
 				if curErr == nil {
