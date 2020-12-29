@@ -54,6 +54,7 @@ func main() {
 	r := mux.NewRouter()
 	port := os.Getenv("REST_PORT")
 	r.HandleFunc("/api/shipment", shipmentHandler.GetPendingShipments).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc("/api/shipment", shipmentHandler.PostPendingShipemt).Methods(http.MethodPost, http.MethodOptions)
 	r.Use(loggingMiddleware)
 	// TODO: fix this
 	rWithCORS := cors.Default().Handler(r)

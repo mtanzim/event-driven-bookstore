@@ -3,10 +3,12 @@ package service
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"log"
 	"time"
 
 	dto "github.com/mtanzim/event-driven-bookstore/common-server/dto"
+	localDTO "github.com/mtanzim/event-driven-bookstore/warehouse-server/dto"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
@@ -26,7 +28,8 @@ func (s ShipmentService) GetPendingShipments() ([]dto.CartWarehouse, error) {
 	defer cancel()
 
 	var data []dto.CartWarehouse
-	cursor, err := s.collection.Find(ctx, bson.M{}, nil)
+	filter := bson.M{"shipped": false}
+	cursor, err := s.collection.Find(ctx, filter, nil)
 	if err != nil {
 		return nil, err
 
@@ -35,6 +38,25 @@ func (s ShipmentService) GetPendingShipments() ([]dto.CartWarehouse, error) {
 		return nil, err
 	}
 	return data, nil
+
+}
+
+func (s ShipmentService) PostPendingShipemt(cart *localDTO.PostShipment) (*localDTO.PostShipment, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"_id": cart.CartID}
+	update := bson.D{{"$set", bson.D{{"shipped", true}}}}
+
+	updateRes, updateErr := s.collection.UpdateOne(ctx, filter, update)
+	if updateErr != nil {
+		return nil, updateErr
+	}
+	if updateRes.ModifiedCount == 1 || updateRes.UpsertedCount == 1 {
+		log.Println("Successfully shipped cart:", cart.CartID)
+		return cart, nil
+	}
+	return nil, errors.New("Something went wrong.")
 
 }
 

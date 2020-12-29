@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	localDTO "github.com/mtanzim/event-driven-bookstore/warehouse-server/dto"
 	service "github.com/mtanzim/event-driven-bookstore/warehouse-server/service"
 )
 
@@ -25,4 +26,21 @@ func (h ShipmentHandler) GetPendingShipments(w http.ResponseWriter, r *http.Requ
 		return
 	}
 	json.NewEncoder(w).Encode(pendingShipments)
+}
+
+func (h ShipmentHandler) PostPendingShipemt(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	var cart localDTO.PostShipment
+	if err := json.NewDecoder(r.Body).Decode(&cart); err != nil {
+		log.Println(err)
+		http.Error(w, "Cannot process shipment", http.StatusBadRequest)
+		return
+	}
+	postedShipment, err := h.service.PostPendingShipemt(&cart)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Cannot update shipment", http.StatusInternalServerError)
+		return
+	}
+	json.NewEncoder(w).Encode(postedShipment)
 }

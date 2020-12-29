@@ -1,12 +1,34 @@
-const BASE_URL = "http://localhost:8082/";
+const BASE_URL = "http://localhost:8082";
 async function fetchData() {
   const res = await fetch(`${BASE_URL}/api/shipment`);
   const shipments = await res.json();
   return shipments;
 }
 
+async function shipCart(cartId) {
+  const res = await fetch(`${BASE_URL}/api/shipment`, {
+    method: "POST",
+    body: JSON.stringify({ cartId }),
+  });
+  if (res.status !== 200) {
+    throw new Error("Something went wrong!");
+  }
+}
+
 function generateBtnId(cartId) {
   return `btn-${cartId}`;
+}
+
+function generateBtnHandler(cartId) {
+  return async () => {
+    try {
+      await shipCart(cartId);
+      main();
+    } catch (err) {
+      console.log(err);
+      alert(err);
+    }
+  };
 }
 
 function renderData(rows) {
@@ -19,11 +41,6 @@ ${rows
       paid,
     } = row;
 
-    // TODO: do this from the backend
-    if (shipped) {
-      return "";
-    }
-
     return `
       <div id=${cartId} class="grid-item">
         <h2><code>${cartId}</code>\t${paid ? "Paid" : "Pending"}</h2>
@@ -35,7 +52,7 @@ ${rows
         <ul>
         ${items
           .map(
-            ({ book, qty }) =>
+            ({ book, Qty: qty }) =>
               `<li>${book.title} - ${book.author} - ${qty}</li>`
           )
           .join("")}
@@ -48,17 +65,17 @@ ${rows
   })
   .join("")}
 </div>`;
+  return Promise.resolve();
 }
 
 function attachBtnHandlers(rows) {
-  const buttonIds = rows.map((row) => {
+  rows.forEach((row) => {
     const {
       cart: { cartId },
     } = row;
-    return generateBtnId(cartId);
-  });
-  buttonIds.forEach((btnId) => {
-    document.getElementById(btnId).onclick = () => alert(`${btnId} Clicked`);
+    const curBtnId = generateBtnId(cartId);
+    const curBtnHandler = generateBtnHandler(cartId);
+    document.getElementById(curBtnId).onclick = curBtnHandler;
   });
 }
 
