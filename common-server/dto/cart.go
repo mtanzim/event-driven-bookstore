@@ -4,7 +4,7 @@ import "go.mongodb.org/mongo-driver/bson/primitive"
 
 type CartItem struct {
 	Book BookInCart `json:"book"`
-	Qty  int32      `json:qty`
+	Qty  int32      `json:"qty"`
 }
 
 type CartUserInformation struct {
