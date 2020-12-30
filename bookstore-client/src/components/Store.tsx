@@ -32,7 +32,7 @@ export function Store() {
         cartUserInformation: values,
       };
       const res = await postCart(body);
-      if (res.status == 200) {
+      if (res.status === 200) {
         alert("Order requested!");
         getBooks();
         clearCart();
