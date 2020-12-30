@@ -2,8 +2,14 @@ import React, { useEffect, useState } from "react";
 import { BookComponent } from "./Book";
 import { Cart } from "./CartItem";
 import { Checkout } from "./Checkout";
-import { CheckoutFormValues, CheckoutDTO } from "./interfaces";
-import { fetchBooks, Book, CartItem } from "../api";
+import {
+  fetchBooks,
+  Book,
+  CartItem,
+  postCart,
+  CheckoutFormValues,
+  CheckoutDTO,
+} from "../api";
 
 export function Store() {
   const [books, setBooks] = useState(new Map<string, Book>());
@@ -25,11 +31,7 @@ export function Store() {
         items: cart,
         cartUserInformation: values,
       };
-      console.log(body);
-      const res = await fetch("http://localhost:8080/api/checkout", {
-        method: "POST",
-        body: JSON.stringify(body),
-      });
+      const res = await postCart(body);
       if (res.status == 200) {
         alert("Order requested!");
         getBooks();

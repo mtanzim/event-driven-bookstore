@@ -18,3 +18,23 @@ export async function fetchBooks(): Promise<Book[]> {
   const books = await res.json();
   return books || [];
 }
+
+export interface CheckoutFormValues {
+  address: string;
+  cardNum: string;
+  code: string;
+  email: string;
+  phone: string;
+}
+
+export interface CheckoutDTO {
+  items: CartItem[];
+  cartUserInformation: CheckoutFormValues;
+}
+
+export async function postCart(body: CheckoutDTO) {
+  return fetch(`${BASE_API}/api/checkout`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}

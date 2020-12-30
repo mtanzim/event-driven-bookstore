@@ -1,6 +1,6 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { CheckoutFormValues } from "./interfaces";
+import { CheckoutFormValues } from "../api";
 
 interface Props {
   onSubmit: (data: CheckoutFormValues) => Promise<void>;
