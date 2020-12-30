@@ -46,14 +46,14 @@ func (s ShipmentService) GetPendingShipments() ([]dto.CartWarehouse, error) {
 
 }
 
-func (s ShipmentService) PostPendingShipemt(cart *localDTO.PostShipment) (*dto.CartWarehouse, error) {
+func (s ShipmentService) PostPendingShipemt(cart *localDTO.PostShipment) (*dto.CartWarehouseShipped, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	filter := bson.M{"_id": cart.CartID}
 	update := bson.D{{"$set", bson.D{{"shipped", true}}}}
 
-	var cartToUpdate dto.CartWarehouse
+	var cartToUpdate dto.CartWarehouseShipped
 	updateErr := s.collection.FindOneAndUpdate(ctx, filter, update).Decode(&cartToUpdate)
 	if updateErr != nil {
 		return nil, updateErr
@@ -63,7 +63,7 @@ func (s ShipmentService) PostPendingShipemt(cart *localDTO.PostShipment) (*dto.C
 
 }
 
-func (s ShipmentService) sendMessageToProducer(cart *dto.CartWarehouse) {
+func (s ShipmentService) sendMessageToProducer(cart *dto.CartWarehouseShipped) {
 	msg, err := json.Marshal(cart)
 	if err != nil {
 		log.Println(err)

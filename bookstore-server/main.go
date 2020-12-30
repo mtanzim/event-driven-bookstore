@@ -9,6 +9,7 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/mtanzim/event-driven-bookstore/bookstore-server/handler"
 	"github.com/mtanzim/event-driven-bookstore/bookstore-server/service"
+	"github.com/mtanzim/event-driven-bookstore/common-server/consumer"
 	"github.com/mtanzim/event-driven-bookstore/common-server/persister"
 	kafkaProducer "github.com/mtanzim/event-driven-bookstore/common-server/producer"
 	"github.com/rs/cors"
@@ -25,19 +26,24 @@ func main() {
 
 	uri := os.Getenv("MONGO_URI")
 	dbName := os.Getenv("MONGO_DB")
+	groupID := os.Getenv("KAFKA_GROUP_ID")
 
 	var checkoutTopics service.CheckoutTopics
 	checkoutTopics.PaymentTopic = os.Getenv("PAYMENT_TOPIC")
 	checkoutTopics.ShipmentTopic = os.Getenv("SHIPMENT_TOPIC")
+	shipmentCompletedTopic := os.Getenv("CART_SHIPMENT_COMPLETE_TOPIC")
 
 	db, disconnectDb := persister.NewMongo(uri, dbName)
 	defer disconnectDb()
+	bookCollection := db.Collection("books")
 
 	kafkaServerAddr := os.Getenv("KAFKA_SERVER_ADDR")
 	producer := kafkaProducer.NewKafkaProducer(kafkaServerAddr)
 	defer producer.Close()
 
-	bookCollection := db.Collection("books")
+	shipmentCompleteKafkaConsumer := consumer.NewKafkaConsumer(kafkaServerAddr, groupID)
+	stockUpdateService := service.NewStockUpdateService(shipmentCompleteKafkaConsumer, shipmentCompletedTopic, bookCollection)
+	go stockUpdateService.MonitorAndUpdate()
 
 	bookHandler := handler.NewBookHandler(bookCollection)
 	checkoutHandler := handler.NewCheckoutHandler(producer, &checkoutTopics, bookCollection)
