@@ -108,7 +108,6 @@ func (s ShipmentService) persist(shipmentRequest dto.CartWarehouse) {
 		if err == mongo.ErrNoDocuments {
 			insertRes, insertErr := s.collection.InsertOne(ctx, shipmentRequest)
 			if insertErr != nil {
-				// TODO: ignore failed insert on duplicate?
 				log.Println(err)
 			}
 			log.Println("Inserted shipment ", insertRes.InsertedID)

@@ -67,7 +67,6 @@ func (s CheckoutService) stageStock(items []dto.CartItem, done chan bool) {
 	}
 }
 
-// TODO: fire off shipment message
 func (s CheckoutService) requestCartShipment(cart *dto.Cart, id primitive.ObjectID) {
 
 	cartShipment := dto.CartShipment{

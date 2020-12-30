@@ -58,7 +58,6 @@ func (s PaymentService) processPayment(paymentRequest *dto.CartPayment) {
 	}
 }
 
-// TODO: move this to common?
 func (s PaymentService) sendMessageToProducer(topic *string, msg []byte) {
 
 	err := s.producer.Produce(&kafka.Message{
