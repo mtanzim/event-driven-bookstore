@@ -31,6 +31,7 @@ export function Store() {
         body: JSON.stringify(body),
       });
       if (res.status == 200) {
+        alert("Order requested!");
         getBooks();
         clearCart();
       }
